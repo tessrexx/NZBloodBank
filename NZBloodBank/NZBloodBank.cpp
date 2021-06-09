@@ -6,42 +6,52 @@
 //C++ Libraries we may need
 #include <iostream>
 #include <cstdlib>
-#include <string>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 
 using namespace std;
 
+const int SIZE = 30; //Constant for Description Size
+
+struct Donor_Login
+{
+    char username[SIZE];
+    char password[SIZE];
+};
+
 //Structure containing information required to register a new donor
 struct New_Donor
 {
-    char first_name[10];
-    char last_name[20];
+    char first_name[SIZE];
+    char last_name[SIZE];
     int date_of_birth;
     char gender; // List M/F/O ??
-    char nationality[20];
-    char ethnicity[20];
-    char health_conditions[20];
+    char nationality[SIZE];
+    char ethnicity[SIZE];
+    char health_conditions[SIZE];
     char blood_group = NULL;
     double contact_number;
-    char email_address[30];
-    char physical_address[75];
+    char email_address[SIZE];
+    char address_line1[SIZE];
+    char address_line2[SIZE];
     int last_donation = 00 / 00 / 00;
 };
 
 //Structure containing information required to register a new recipient
 struct New_Recipient
 {
-    char name[20];
-    char email_address[30];
-    char physical_address[75];
+    char name[SIZE];
+    char email_address[SIZE];
+    char address_line1[SIZE];
+    char address_line2[SIZE];
     double contact_number;
     int registration_status; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
 };
 
 //Functions (some will require pointers at some point)
 void introduction_menu();
-void donor_login();
+void donor_login(fstream&);
 void donor_registration();
 void donor_menu();
 void book_donation();
@@ -157,31 +167,53 @@ void introduction_menu()
 }
 
 //Existing donor login (MAY COMBINE WITH DONOR MENU)
-void donor_login()
+void donor_login(fstream& login)
 {
     system("cls"); //Clears console screen
     cout << endl << "\tAOTEAROA BLOOD";
     line();
 
-    cout << " Donor Login" << endl << endl;
-    cout << " Username: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
-    cout << " Password: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
+    // Calling options to read data
+    fstream login;
+    Donor_Login donor_record;
+    bool flag = false;
+    char username[SIZE];
+    char password[SIZE];
 
-    /* if (username || password != file)
-      {
-       Username or Password incorrect.
-       Please try again.
-       attempt++ (to count attempts)
-      }
-      else
-      {
-       donor_menu();
-      }
-    */
+    // Open the file for reading
+    login.open("donor_record.txt", ios::in | ios::binary);
+
+    if (!login)
+    {
+        cout << "Error in opening the file . ";
+    }
+    else
+    {
+        cout << endl << "Enter Username: ";
+        cin.getline(username, SIZE);
+        cout << "Enter Password:";
+        cin.getline(password, SIZE);
+
+        // Now read, search, and display the records
+        login.read(reinterpret_cast<char*>(&donor_record), sizeof(donor_record));
+
+        while (!login.eof())
+        {
+            if ((strcmp(username, donor_record.username) == 0) && (strcmp(password, donor_record.password) == 0))
+            {
+                cout << "Login Successful." << endl;
+                flag = true;
+            }
+            login.read(reinterpret_cast<char*>(&donor_record), sizeof(donor_record));
+        }
+    }
+
+    if (flag == false)
+    {
+        cout << "Login Unsuccessful." << endl;
+    }
+
+    login.close();
 
     line();
 }
