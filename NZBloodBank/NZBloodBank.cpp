@@ -68,24 +68,24 @@ void introduction_menu()
     cout << endl << "\tAOTEAROA BLOOD";
     line();
 
+    //Main Menu Display
+    cout << " Main Menu";
+    line();
+    cout << " 1. Information & Contact Us" << endl;
+    cout << " 2. Existing Donor" << endl;
+    cout << " 3. New Donor" << endl;
+    cout << " 4. Existing Recipient" << endl;
+    cout << " 5. New Recipient" << endl;
+    cout << " 6. Admin" << endl;
+    cout << " 7. Exit..." << endl;
+
+    cout << endl << " Enter your option: "; //User Option Input
+    cin >> option;
+    cin.ignore(); //Clears input buffer
+    cout << endl;
+
     do
     {
-        //Main Menu Display
-        cout << " Main Menu";
-        line();
-        cout << " 1. Information & Contact Us" << endl;
-        cout << " 2. Existing Donor" << endl;
-        cout << " 3. New Donor" << endl;
-        cout << " 4. Existing Recipient" << endl;
-        cout << " 5. New Recipient" << endl;
-        cout << " 6. Admin" << endl;
-        cout << " 7. Exit..." << endl;
-
-        cout << endl << " Enter your option: "; //User Option Input
-        cin >> option;
-        cin.ignore(); //Clears input buffer
-        cout << endl;
-
         switch (option)
         {
 
@@ -108,6 +108,22 @@ void introduction_menu()
             cout << " Phone: 0800 000 000" << endl;
             cout << " Email: aotearoa@blood.co.nz" << endl;
             line();
+
+            cout << " Main Menu";
+            line();
+            cout << " 1. Information & Contact Us" << endl;
+            cout << " 2. Existing Donor" << endl;
+            cout << " 3. New Donor" << endl;
+            cout << " 4. Existing Recipient" << endl;
+            cout << " 5. New Recipient" << endl;
+            cout << " 6. Admin" << endl;
+            cout << " 7. Exit..." << endl;
+
+            cout << endl << " Enter your option: "; //User Option Input
+            cin >> option;
+            cin.ignore(); //Clears input buffer
+            cout << endl;
+
             break;
         }
         case 2: // Existing Donor
