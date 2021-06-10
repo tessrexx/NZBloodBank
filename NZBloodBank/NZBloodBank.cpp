@@ -12,6 +12,8 @@
 
 using namespace std;
 
+//Writing here as an addition for example
+
 const int SIZE = 30; //Constant for Description Size
 
 struct Donor_Login
