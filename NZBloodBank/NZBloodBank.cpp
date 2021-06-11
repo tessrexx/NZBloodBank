@@ -23,35 +23,36 @@ struct Donor_Login
 //Structure containing information required to register a new donor
 struct New_Donor
 {
-    char first_name[SIZE];
-    char last_name[SIZE];
+    char first_name[10];
+    char last_name[20];
     int date_of_birth;
     char gender; // List M/F/O ??
-    char nationality[SIZE];
-    char ethnicity[SIZE];
-    char health_conditions[SIZE];
+    char nationality[20];
+    char ethnicity[20];
+    char health_conditions[20];
     char blood_group = NULL;
     double contact_number;
-    char email_address[SIZE];
-    char address_line1[SIZE];
-    char address_line2[SIZE];
+    char email_address[30];
+    char physical_address[75];
     int last_donation = 00 / 00 / 00;
 };
 
 //Structure containing information required to register a new recipient
 struct New_Recipient
 {
-    char name[SIZE];
-    char email_address[SIZE];
-    char address_line1[SIZE];
-    char address_line2[SIZE];
+    char name[20];
+    char email_address[30];
+    char physical_address[75];
     double contact_number;
     int registration_status; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
 };
 
 //Functions (some will require pointers at some point)
+void main_menu();
 void introduction_menu();
-void donor_login(fstream&);
+void about_us();
+void contact_us();
+void donor_login(); //(fstream&)
 void donor_registration();
 void donor_menu();
 void book_donation();
@@ -62,9 +63,18 @@ void recipient_menu();
 void admin_login();
 void admin_menu();
 void line();
+void border_line();
 
 int main()
 {
+    border_line();
+    printf("\x1B[93m\n\t\t\t\t  AOTEAROA BLOOD\033[0m\n");
+    border_line();
+
+    cout << "  Welcome to Aotearoa Blood, where we make blood donation easy.\n";
+    cout << "  Ranked NZ's #1 Blood Bank System in 2020\n";
+    cout << "  Use menu below to navigate through our system.\n";
+    line();
     introduction_menu();
 
     return 0;
@@ -75,65 +85,26 @@ void introduction_menu()
 {
     int option;
 
-    cout << endl << "\tAOTEAROA BLOOD";
-    line();
+    //cout << "\tAOTEAROA BLOOD";
+    //line();
 
-    //Main Menu Display
-    cout << " Main Menu";
-    line();
-    cout << " 1. Information & Contact Us" << endl;
-    cout << " 2. Existing Donor" << endl;
-    cout << " 3. New Donor" << endl;
-    cout << " 4. Existing Recipient" << endl;
-    cout << " 5. New Recipient" << endl;
-    cout << " 6. Admin" << endl;
-    cout << " 7. Exit..." << endl;
-
-    cout << endl << " Enter your option: "; //User Option Input
-    cin >> option;
-    cin.ignore(); //Clears input buffer
-    cout << endl;
-
-    do
+    while (1)
     {
+        // show main menu first before switch cases options
+        main_menu();
+        cout << endl << " Enter your option: "; //User Option Input
+        cin >> option;
+        cin.ignore(); //Clears input buffer
+        //cout << endl;
+
         switch (option)
         {
 
-        case 1: // Information & Contact Us
+        case 1: // About & Contact Us
         {
-            system("cls"); //Clears console screen
-            cout << endl << "\tAOTEAROA BLOOD";
-
-            line();
-            cout << " About Aotearoa Blood";
-            line();
-            cout << " Aotearoa Blood was founded in 1998 under the New Zealand Public Health and Disability Act 2000" << endl;
-            cout << " and is an appointed entity under section 63 of the Human Tissue Act 2008," << endl;
-            cout << " with primary responsibility for blood and controlled human substances in New Zealand." << endl;
-            cout << " Prior to this, a variety of regional blood services operated out of hospitals." << endl;
-
-            line();
-            cout << " Contact us: ";
-            line();
-            cout << " Phone: 0800 000 000" << endl;
-            cout << " Email: aotearoa@blood.co.nz" << endl;
-            line();
-
-            cout << " Main Menu";
-            line();
-            cout << " 1. Information & Contact Us" << endl;
-            cout << " 2. Existing Donor" << endl;
-            cout << " 3. New Donor" << endl;
-            cout << " 4. Existing Recipient" << endl;
-            cout << " 5. New Recipient" << endl;
-            cout << " 6. Admin" << endl;
-            cout << " 7. Exit..." << endl;
-
-            cout << endl << " Enter your option: "; //User Option Input
-            cin >> option;
-            cin.ignore(); //Clears input buffer
-            cout << endl;
-
+            system("cls"); // clears screen
+            about_us();
+            contact_us();
             break;
         }
         case 2: // Existing Donor
@@ -158,7 +129,7 @@ void introduction_menu()
         }
         case 6: // Admin
         {
-            admin_login();
+            admin_menu();
             break;
         }
         default: exit(0); //Exit Console
@@ -166,12 +137,49 @@ void introduction_menu()
     } while (option < 7);
 }
 
+void main_menu()
+{
+    //Main Menu Display
+    cout << " MAIN MENU\n";
+
+    cout << " 1. Information & Contact Us" << endl;
+    cout << " 2. Existing Donor" << endl;
+    cout << " 3. New Donor" << endl;
+    cout << " 4. Existing Recipient" << endl;
+    cout << " 5. New Recipient" << endl;
+    cout << " 6. Admin" << endl;
+    cout << " 7. Exit..." << endl;
+}
+
+void about_us()
+{
+    cout << endl;
+    border_line();
+    printf("\x1B[35m\n\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m\n\n");
+    //cout << "\t\t\t\t\tABOUT AOTEAROA BLOOD";
+    cout << "  Aotearoa Blood was founded in 1998 under the New Zealand Public Health and Disability Act 2000" << endl;
+    cout << "  and is an appointed entity under section 63 of the Human Tissue Act 2008," << endl;
+    cout << "  with primary responsibility for blood and controlled human substances in New Zealand." << endl;
+    cout << "  Prior to this, a variety of regional blood services operated out of hospitals." << endl;
+}
+
+void contact_us()
+{
+    cout << "\n  CONTACT US \n";
+    cout << "  Phone: 0800 000 000" << endl;
+    cout << "  Email: aotearoa@blood.co.nz" << endl;
+    cout << endl << endl;
+    line();
+}
+
 //Existing donor login (MAY COMBINE WITH DONOR MENU)
-void donor_login(fstream& login)
+void donor_login()
 {
     system("cls"); //Clears console screen
-    cout << endl << "\tAOTEAROA BLOOD";
-    line();
+
+    border_line();
+    printf("\x1B[93m\n\t\t\t\t  AOTEAROA BLOOD\033[0m\n");
+    border_line();
 
     // Calling options to read data
     fstream login;
@@ -231,7 +239,7 @@ void donor_menu()
     cout << "\tAOTEAROA BLOOD";
     line();
 
-    cout << "Welcome " << endl; /*insert name attached to login*/
+    cout << "Welcome back " << endl; /*insert name attached to login*/
     line();
 
     int option;
@@ -571,9 +579,19 @@ void admin_menu()
 void line()
 {
     cout << endl;
-    for (int i = 0; i < 40; i++)
+    for (int i = 0; i < 97; i++)
     {
         cout << "-";
     }
     cout << endl;
+}
+
+void border_line()
+{
+    cout << "\n+";
+    for (int i = 0; i < 95; i++)
+    {
+        cout << "-";
+    }
+    cout << "+\n";
 }
