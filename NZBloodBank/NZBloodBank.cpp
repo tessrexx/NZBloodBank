@@ -25,15 +25,15 @@ struct New_Donor
 {
     char first_name[10];
     char last_name[20];
-    int date_of_birth;
+    int dob;
     char gender; // List M/F/O ??
     char nationality[20];
     char ethnicity[20];
     char health_conditions[20];
     char blood_group = NULL;
     double contact_number;
-    char email_address[30];
-    char physical_address[75];
+    char email[30];
+    char address[75];
     int last_donation = 00 / 00 / 00;
 };
 
@@ -53,7 +53,7 @@ void introduction_menu();
 void about_us();
 void contact_us();
 void donor_login(); //(fstream&)
-void donor_registration();
+void donor_registration(New_Donor &r);
 void donor_menu();
 void book_donation();
 void update_information();
@@ -64,6 +64,8 @@ void admin_login();
 void admin_menu();
 void line();
 void border_line();
+
+
 
 int main()
 {
@@ -114,7 +116,7 @@ void introduction_menu()
         }
         case 3: // New Donor
         {
-            donor_registration();
+            donor_registration(&r);
             break;
         }
         case 4: // Existing Recipient
@@ -227,8 +229,28 @@ void donor_login()
 }
 
 //New donor registration 
-void donor_registration()
+void donor_registration(New_Donor &r) // r for registration :)
 {
+    system("cls"); //Clears console screen
+    cout << "  AOTEAROA BLOOD\n";
+    cout << "  Register\n";
+
+    cout << "  First Name: " << r.first_name;
+    cout << "  Last Name: " << r.last_name;
+    cout << "  Date of Birth: " << r.dob;
+    cout << "  Gender: " << r.gender;
+    cout << "  Nationality: " << r.nationality;
+    cout << "  Ethnicity: " << r.ethnicity;
+    cout << "  Health Conditions: " << r.health_conditions;
+    cout << "  Blood Group: " << r.blood_group; // include 'none' as an option if user doesn't know
+    cout << "  Contact Number: " << r.contact_number;
+    cout << "  Email Address: " << r.email;
+    cout << "  Physical Address: " << r.address;
+    cout << "  Date of Last Donation (Optional): " << r.last_donation;
+
+    cout << "  \n\n Username: "; //fstream?
+    cout << "  Password: ";
+    cout << "  Confirm Password: ";
 
 }
 
