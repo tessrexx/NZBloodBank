@@ -40,10 +40,9 @@ struct Donor_Details //Includes Registration Details
 //Structure containing information required to register a new recipient
 struct Recipient_Details
 {
-    char name[SIZE];
-    char email_address[SIZE];
-    char address_line1[SIZE];
-    char address_line2[SIZE];
+    char name[20];
+    char email_address[30];
+    char physical_address[75];
     double contact_number;
     int registration_status; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
 };
@@ -64,6 +63,8 @@ void admin_login();
 void admin_menu();
 void line();
 void border_line();
+
+
 
 int main()
 {
@@ -168,11 +169,13 @@ void about_and_contact()
 }
 
 //Existing donor login
-void donor_login(fstream& login)
+void donor_login()
 {
     system("cls"); //Clears console screen
-    cout << endl << "\tAOTEAROA BLOOD";
-    line();
+
+    border_line();
+    printf("\x1B[93m\n\t\t\t\t  AOTEAROA BLOOD\033[0m\n");
+    border_line();
 
     Donor_Details readRecord;
     bool flag = false;
@@ -304,7 +307,7 @@ void donor_menu()
     cout << "\tAOTEAROA BLOOD";
     line();
 
-    cout << "Welcome " << endl; /*insert name attached to login*/
+    cout << "Welcome back " << endl; /*insert name attached to login*/
     line();
 
     int option;
