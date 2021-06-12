@@ -169,7 +169,7 @@ void about_and_contact()
 }
 
 //Existing donor login
-void donor_login()
+void donor_login(fstream& login)
 {
     system("cls"); //Clears console screen
 
