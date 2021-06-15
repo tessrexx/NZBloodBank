@@ -1,9 +1,8 @@
-// NZ BLOOD BANK - NOTES.cpp : This file contains the 'main' function. Program execution begins and ends there.
-// Chosen name is "AOTEAROA BLOOD"
-// Testing Functions/Structures/General Shit
-// Notes only
+// NZ Blood Bank - Aotearoa Blood
+// Program allows users register as a donor or recipient & access a range of functions
+// Also allows admin to view & update information
 
-//C++ Libraries we may need
+//C++ Libraries 
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -18,79 +17,99 @@ struct Donor_Details //Includes Registration Details
 {
     char first_name[SIZE];
     char last_name[SIZE];
-    int date_of_birth;
+    char date_of_birth[14];
     char gender[SIZE]; 
     char nationality[SIZE];
     char ethnicity[SIZE];
     char health_conditions[SIZE];
     char blood_group[SIZE];
-    double contact_number;
+    char contact_number[14];
     char email_address[SIZE];
     char address_line1[SIZE];
     char address_line2[SIZE];
-    int last_donation;
+    char last_donation[14];
 
     char username[SIZE];
     char password[SIZE];
 };
 
-//Structure containing information required to register a new donor
-
-
 //Structure containing information required to register a new recipient
 struct Recipient_Details
 {
-    char name[20];
-    char email_address[30];
-    char physical_address[75];
-    double contact_number;
-    int registration_status; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
+    char name[SIZE];
+    char email_address[SIZE];
+    char address_line1[SIZE];
+    char address_line2[SIZE];
+    char contact_number[14];
+    char registration_status[14]; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
+
+    char username[SIZE];
+    char password[SIZE];
 };
 
-//Functions (some will require pointers at some point)
-void main_menu();
-void introduction_menu(fstream& login);
+
+// Main Menu Functions
+void main_menu(fstream& info);
 void about_and_contact();
-void donor_login(fstream& login); 
-void donor_registration(fstream& login);
-void donor_menu();
+
+// Donor Functions
+void donor_registration(fstream& info);
+void donor_login(fstream& info);
+void donor_menu(fstream& info);
 void book_donation();
-void update_information();
-void recipient_login();
-void recipient_registration();
-void recipient_menu();
-void admin_login();
-void admin_menu();
+void update_information(fstream& info);
+
+// Recipient Functions
+void recipient_login(fstream& info);
+void recipient_registration(fstream& info);
+void recipient_menu(fstream& info);
+void fullName(fstream& info);
+void bloodGroup(fstream& info);
+void location(fstream& info);
+
+// Donor Functions
+void admin_login(fstream& info);
+void admin_menu(fstream& info);
+
+// Visual Functions
 void line();
 void border_line();
 
-
-
+// Main Function
 int main()
 {
-    fstream login;
+    fstream info;
 
     border_line();
-    printf("\x1B[93m\n\t\t\t\t  AOTEAROA BLOOD\033[0m\n");
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << "  Welcome to Aotearoa Blood, where we make blood donation easy." << endl;
     cout << "  Use menu below to navigate through our system." << endl;
     line();
-    introduction_menu(login);
+    main_menu(info);
 
     return 0;
 }
 
-//Function to Display Introduction & Menu
-void introduction_menu(fstream& login)
+
+//Function to Display Introduction & Menu  ***COMPLETED***
+void main_menu(fstream& info)
 {
     int option;
 
     while (1)
     {
-        // show main menu first before switch cases options
-        main_menu();
+        cout << " MAIN MENU" << endl << endl;
+
+        cout << " 1. Information & Contact Us" << endl;
+        cout << " 2. Existing Donor" << endl;
+        cout << " 3. New Donor" << endl;
+        cout << " 4. Existing Recipient" << endl;
+        cout << " 5. New Recipient" << endl;
+        cout << " 6. Admin" << endl;
+        cout << " 7. Exit..." << endl;
+
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
         cin.ignore(); //Clears input buffer
@@ -107,54 +126,49 @@ void introduction_menu(fstream& login)
         }
         case 2: // Existing Donor
         {
-            donor_login(login);
+            donor_login(info);
             break;
         }
         case 3: // New Donor
         {
-            donor_registration(login);
+            donor_registration(info);
             break;
         }
         case 4: // Existing Recipient
         {
-            recipient_login();
+            recipient_login(info);
             break;
         }
         case 5: // New Recipient
         {
-            admin_login();
+            recipient_registration(info);
             break;
         }
         case 6: // Admin
         {
-            admin_menu();
+            admin_login(info);
             break;
         }
-        default: exit(0); //Exit Console
+        case 7:
+        {
+            cout << "Program Exited..." << endl << endl;
+            exit(0);
         }
-    } while (option < 7);
+        default:
+        {
+            cout << "Invalid selection. Please try again.";
+        }
+        while (option < 8);
+        }
+    }
 }
 
-// Function to display Main Menu 
-void main_menu()
-{
-    cout << " MAIN MENU\n";
-
-    cout << " 1. Information & Contact Us" << endl;
-    cout << " 2. Existing Donor" << endl;
-    cout << " 3. New Donor" << endl;
-    cout << " 4. Existing Recipient" << endl;
-    cout << " 5. New Recipient" << endl;
-    cout << " 6. Admin" << endl;
-    cout << " 7. Exit..." << endl;
-}
-
-// Function to Display info about the blood bank & contact details
+// Function to Display info about the blood bank & contact details  ***COMPLETED***
 void about_and_contact()
 {
     cout << endl;
     border_line();
-    printf("\x1B[35m\n\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m\n\n");
+    cout << endl <<("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
     //cout << "\t\t\t\t\tABOUT AOTEAROA BLOOD";
     cout << "  Aotearoa Blood was founded in 1998 under the New Zealand Public Health and Disability Act 2000" << endl;
     cout << "  and is an appointed entity under section 63 of the Human Tissue Act 2008," << endl;
@@ -168,74 +182,23 @@ void about_and_contact()
     line();
 }
 
-//Existing donor login
-void donor_login(fstream& login)
-{
-    system("cls"); //Clears console screen
-
-    border_line();
-    printf("\x1B[93m\n\t\t\t\t  AOTEAROA BLOOD\033[0m\n");
-    border_line();
-
-    Donor_Details readRecord;
-    bool flag = false;
-    char name[SIZE];
-    char pass[SIZE];
-
-    // Open the file for reading
-    login.open("donor.dat", ios::in | ios::binary);
-
-    if (!login)
-    {
-        cout << "Error in opening the file... ";
-    }
-    else
-    {
-        //User Input
-        cout << endl << "Enter Username: ";
-        cin.getline(name, SIZE);
-        cout << "Enter Password: ";
-        cin.getline(pass, SIZE);
-
-        // Read & search for matching data
-        login.read(reinterpret_cast<char*>(&readRecord), sizeof(readRecord));
-
-        while (!login.eof())
-        {
-            if ((strcmp(name, readRecord.username) == 0) && (strcmp(pass, readRecord.password) == 0))
-            {
-                donor_menu();
-                flag = true;
-            }
-            login.read(reinterpret_cast<char*>(&readRecord), sizeof(readRecord));
-        }
-    }
-    // Show if now matching details found
-    if (flag == false)
-    {
-        cout << endl << "Login not successful. Please try again." << endl;
-    }
-
-    login.close();
-
-    line();
-}
-
-//Function to obtain New Donor Registration info
-void donor_registration(fstream& login)
+//Function to obtain New Donor Registration info  ***COMPLETED***
+void donor_registration(fstream& info)
 {
     // Variables needed to write the file
     Donor_Details record;
     // Open file
-    login.open("donor.dat", ios::out | ios::app | ios::binary);
+    info.open("Donor.dat", ios::out | ios::app | ios::binary);
 
-    if (!login)
+    if (!info)
     {
+        //Error message for non-existent file
         cout << "Error opening file.";
     }
+
+    // User input & writing in data file
     else
     {
-        // User input & writing in data file
         cout << "  First Name: ";
         cin.getline(record.first_name, SIZE);
 
@@ -243,86 +206,138 @@ void donor_registration(fstream& login)
         cin.getline(record.last_name, SIZE);
 
         cout << "  Date of Birth: ";
-        cin >> record.date_of_birth;
+        cin.getline(record.date_of_birth, 14);
 
         cout << "  Gender: ";
         cin.getline(record.gender, SIZE);
-        cin.ignore();
 
         cout << "  Nationality: ";
         cin.getline(record.nationality, SIZE);
-        cin.ignore();
 
         cout << "  Ethnicity: ";
         cin.getline(record.ethnicity, SIZE);
-        cin.ignore();
 
         cout << "  Health Conditions: ";
         cin.getline(record.health_conditions, SIZE);
-        cin.ignore();
 
         cout << "  Blood Group: ";
         cin.getline(record.blood_group, SIZE);
-        cin.ignore();
 
         cout << "  Contact Number: ";
-        cin >> record.contact_number;
+        cin.getline(record.contact_number, 14);
 
         cout << "  Email Address: ";
-        cin.getline(record.email_address, 40);
-        cin.ignore();
+        cin.getline(record.email_address, SIZE);
 
         cout << "  Street Address: ";
         cin.getline(record.address_line1, SIZE);
-        cin.ignore();
 
         cout << "  Suburb/City: ";
         cin.getline(record.address_line2, SIZE);
-        cin.ignore();
 
         cout << "  Date of Last Donation (Optional): ";
-        cin >> record.last_donation;
+        cin.getline(record.last_donation, 14);
 
         // User chooses their udername & password for future use 
         cout << endl << endl << "  Username: ";
         cin.getline(record.username, SIZE);
-        cin.ignore();
 
         cout << "  Password: ";
         cin.getline(record.password, SIZE);
-        cin.ignore();
 
-        cout << "Now writing record...." << endl;
-
-        login.write(reinterpret_cast<char*>(&record), sizeof(record));
+        info.write(reinterpret_cast<char*>(&record), sizeof(record));
+        // Close the file
+        info.close();
     }
-    // Close the file
-    login.close();
+    cout << endl << "Thank you for registering! Please select Option 2 in the Main Menu to Login." << endl << endl;
 }
 
-//Function to display Donor Menu 
-void donor_menu()
+//Existing Donor Login  ***COMPLETED***
+void donor_login(fstream& info)
 {
     system("cls"); //Clears console screen
-    cout << "\tAOTEAROA BLOOD";
-    line();
 
-    cout << "Welcome back " << endl; /*insert name attached to login*/
-    line();
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    Donor_Details record;
+    bool flag = false;
+    char name[SIZE];
+    char pass[SIZE];
+    int attempt = 0;
+
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+
+    if (!info)
+    {
+        cout << "Error in opening the file... ";
+    }
+
+    while (attempt < 3)
+    {
+        //User Input
+        cout << endl << "Enter Username: ";
+        cin.getline(name, SIZE);
+        cout << "Enter Password: ";
+        cin.getline(pass, SIZE);
+
+
+        // Read & search for matching data
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+        while (!info.eof())
+        {
+            if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
+            {
+                cout << "Welcome back " << record.first_name << "!" << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+
+        // Show if no matching details found
+        if (flag == true)
+        {
+            donor_menu(info);
+        }
+        else if (flag == false)
+        {
+            cout << endl << "Incorrect Username or Password. Please try again." << endl;
+            line();
+            attempt++;
+        }
+        while (attempt > 2)
+        {
+            cout << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
+        }  
+    }
+    //Close File
+    info.close();
+}
+
+//Function to display Donor Menu  ***COMPLETED***
+void donor_menu(fstream& info)
+{
+    system("cls"); //Clears console screen
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
 
     int option;
 
     do
     {
         //Main Menu Display
-        line();
         cout << " Donor Menu";
         line();
         cout << " 1. Procedure to Donate Blood" << endl;
         cout << " 2. Benefits of Blood Donation" << endl;
         cout << " 3. Book Donation Appointment" << endl;
         cout << " 4. Manage/Update Information" << endl;
-        cout << " 5. Exit..." << endl;
+        cout << " 5. Exit" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -331,12 +346,12 @@ void donor_menu()
 
         switch (option)
         {
-
         case 1: // Procedure to Donate Blood
         {
             system("cls"); //Clears console screen
-            cout << endl << "\tAOTEAROA BLOOD";
-            line();
+            border_line();
+            cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
             cout << " Procedure to Donate Blood";
             line();
 
@@ -358,8 +373,9 @@ void donor_menu()
         case 2: // Benefits of Blood Donation
         {
             system("cls"); //Clears console screen
-            cout << "\tAOTEAROA BLOOD";
-            line();
+            border_line();
+            cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
             cout << " Benefits of Blood Donation";
             line();
 
@@ -378,28 +394,33 @@ void donor_menu()
         }
         case 4: // Manage/Update Information
         {
-            update_information();
+            update_information(info);
             break;
         }
-        default: exit(0); //Exit Console
+        case 5:
+        {
+            cout << "Exited Program..." << endl;
+            exit(0);
         }
-    } while (option < 5);
+        default: cout << "Invalid selection. Please try again.";
+        }
+    } while (option < 6);
 }
 
-//Function for donors to book donation
+//Function for donors to book donation  ***NOT STARTED***
 void book_donation()
 {
-
+    
 }
 
-//Function for donors to update their information
-void update_information()
+//Function for donors to update their information  ***IN PROGRESS***
+void update_information(fstream& info)
 {
     system("cls"); //Clears console screen
 
     int option;
 
-    cout << endl << "\tAOTEAROA BLOOD";
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
     line();
 
     do
@@ -407,12 +428,12 @@ void update_information()
         //Main Menu Display
         cout << " Manage/Update Information";
         line();
-        cout << " 1. Contact Information" << endl;
+        cout << " 1. Contact Number" << endl;
         cout << " 2. Email Address" << endl;
         cout << " 3. Physical Address" << endl;
         cout << " 4. Health Conditions" << endl;
         cout << " 5. Donation Appointment" << endl;
-        cout << " 6. Exit..." << endl;
+        cout << " 6. Back to Donor Menu" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -422,9 +443,27 @@ void update_information()
         switch (option)
         {
 
-        case 1: // Contact Information
+        case 1: // Contact Number
         {
-            /* More info needed here */
+            /*info.open("Donor.dat", ios::in | ios::out || ios::binary);
+
+            if (!info)
+            {
+                cout << "Error in opening the file... ";
+            }
+
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+            while (!info.eof())
+            {
+                cout << "Current Contact Number: " << record.contact_number << endl << endl;
+                cout << "Enter New Contact Number: ";
+                cin >> record.contact_number;
+
+                info.write(reinterpret_cast<char*>(&record), sizeof(record));
+
+                info.close();
+            }*/
             break;
         }
         case 2: // Email Address
@@ -447,56 +486,135 @@ void update_information()
             /* More info needed here */
             break;
         }
-        default: exit(0); //Exit Console
+        default: break; //Exit Console
         }
     } while (option < 6);
 }
 
-//Existing recipient login (MAY COMBINE WITH RECIPIENT MENU)
-void recipient_login()
+//Function to obtain New Recipient Registration Info  ***COMPLETED***
+void recipient_registration(fstream& info)
+{
+    // Variables needed to write the file
+    Recipient_Details record;
+    // Open file
+    info.open("Recipient.dat", ios::out | ios::app | ios::binary);
+
+    if (!info)
+    {
+        //Error message for non-existent file
+        cout << "Error opening file.";
+    }
+
+    // User input & writing in data file
+    else
+    {
+        cout << "  First Name: ";
+        cin.getline(record.name, SIZE);
+
+        cout << "  Email Address: ";
+        cin.getline(record.email_address, SIZE);
+
+        cout << "  Street Address: ";
+        cin.getline(record.address_line1, SIZE);
+
+        cout << "  Suburb/City: ";
+        cin.getline(record.address_line2, SIZE);
+
+        cout << "  Contact Number: ";
+        cin.getline(record.contact_number, 14);
+
+        cout << "  Registration Status: ";
+        cin.getline(record.registration_status, SIZE);
+
+        // User chooses their udername & password for future use 
+        cout << endl << endl << "  Username: ";
+        cin.getline(record.username, SIZE);
+
+        cout << "  Password: ";
+        cin.getline(record.password, SIZE);
+
+        info.write(reinterpret_cast<char*>(&record), sizeof(record));
+        // Close the file
+        info.close();
+    }
+    cout << endl << "Thank you for registering! Please select Option 4 in the Main Menu to Login." << endl << endl;
+} 
+
+//Existing Recipient Login  ***COMPLETED***
+void recipient_login(fstream& info)
 {
     system("cls"); //Clears console screen
-    cout << endl << "\tAOTEAROA BLOOD";
-    line();
 
-    cout << " Recipient Login" << endl << endl;
-    cout << " Username: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
-    cout << " Password: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
 
-    /* if (username || password != file)
-     {
-      Username or Password incorrect.
-      Please try again.
-      attempt++ (to count attempts)
-     }
-     else
-     {
-      recipient_menu();
-     }
-    */
+    Recipient_Details record;
+    bool flag = false;
+    char name[SIZE];
+    char pass[SIZE];
+    int attempt = 0;
 
-    line();
+
+    // Open the file for reading
+    info.open("Recipient.dat", ios::in | ios::binary);
+
+    if (!info)
+    {
+        cout << "Error in opening the file... ";
+    }
+
+    while (attempt < 3)
+    {
+        //User Input
+        cout << endl << "Enter Username: ";
+        cin.getline(name, SIZE);
+        cout << "Enter Password: ";
+        cin.getline(pass, SIZE);
+
+
+        // Read & search for matching data
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+        while (!info.eof())
+        {
+            if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
+            {
+                cout << endl << "Welcome back " << record.name << "!" << endl << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+
+        // Show if no matching details found
+        if (flag == true)
+        {
+            recipient_menu(info);
+        }
+        else if (flag == false)
+        {
+            cout << endl << "Incorrect Username or Password. Please try again." << endl;
+            line();
+            attempt++;
+        }
+        while (attempt > 2)
+        {
+            cout << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
+        }  
+    }
+
+    //Close File
+    info.close();
 }
 
-//New recipient registration
-void recipient_registration()
-{
-
-}
-
-//Function to display Recipient Menu (MAY COMBINE WITH RECIPIENT LOGIN)
-void recipient_menu()
+//Function to display Recipient Menu  ***COMPLETED***
+void recipient_menu(fstream& info)
 {
     system("cls"); //Clears console screen
-    cout << endl << "\tAOTEAROA BLOOD";
-    line();
-
-    cout << "Welcome " << endl; /*insert name attached to login*/
-    line();
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
 
     int option;
 
@@ -514,64 +632,341 @@ void recipient_menu()
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
         cin.ignore(); //Clears input buffer
-        cout << endl;
+        cout << endl << endl;
 
         switch (option)
         {
-
         case 1: // Full Name
         {
-            /* More info needed here */
+            fullName(info);
             break;
         }
         case 2: // Blood Group
         {
-            /* More info needed here */
+            bloodGroup(info);
             break;
         }
         case 3: // Location
         {
-            /* More info needed here */
+            location(info);
             break;
         }
-        default: exit(0); //Exit Console
+        case 4:
+        {
+            cout << "Program Exited..." << endl << endl;
+            exit(0);
         }
-    } while (option < 4);
+        default: cout << "Invalid selection. Please try again.";
+        }
+
+    } while (option < 5);
 }
 
-
-//Fixed admin login (MAY COMBINE WITH ADMIN MENU)
-void admin_login()
+//Function to search by Donor's full name & display ***READ FROM FILE FIX REQUIRED***
+void fullName(fstream& info)
 {
+    Donor_Details record;
+    bool flag = false;
+    char firstName[SIZE];
+    char lastName[SIZE];
+
     system("cls"); //Clears console screen
-    cout << "\tAOTEAROA BLOOD";
-    line();
 
-    cout << " Admin Login" << endl << endl;
-    cout << " Username: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
-    cout << " Password: ";
-    /* cin >> ************* <--- Will need to insert something to check records */
-    cout << endl;
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
 
-    /* if (username || password != file)
-     {
-      Username or Password incorrect.
-      Please try again.
-      attempt++ (to count attempts)
-     }
-     else
-     {
-      admin_menu();
-     }
-    */
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    //Error Message
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+    }
+
+    //User Input
+    cout << endl << "Search by Donor's Full Name" << endl;
+
+    cout << "Enter First Name: ";
+    cin.getline(firstName, SIZE);
+
+    cout << "Enter Last Name: ";
+    cin.getline(lastName, SIZE);
+
+    cout << endl << "Retrieving matching records..." << endl;
+
+    // Read & search for matching data
+    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+    while (!info.eof())
+    {
+        if ((strcmp(firstName, record.first_name) == 0) && (strcmp(lastName, record.last_name) == 0))
+        {
+            cout << endl << " First Name:      ";
+            cout << record.first_name << endl;
+            cout << " Last Name:       ";
+            cout << record.last_name << endl;
+            cout << " Date of Birth:       ";
+            cout << record.date_of_birth << endl;
+            cout << " Nationality:  ";
+            cout << record.nationality << endl;
+            cout << " Ethnicity:  ";
+            cout << record.ethnicity << endl;
+            cout << " Health Conditions:    ";
+            cout << record.health_conditions << endl;
+            cout << " Blood Group:       ";
+            cout << record.blood_group << endl;
+            cout << " Contact Number:       ";
+            cout << record.contact_number << endl;
+            cout << " Email Address:  ";
+            cout << record.email_address << endl;
+            cout << " Street Address:  ";
+            cout << record.address_line1 << endl;
+            cout << " Suburb/City:  ";
+            cout << record.address_line2 << endl;
+            cout << " Date of Last Donation:  ";
+            cout << record.last_donation << endl;
+
+            flag = true;
+        }
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+
+    if (flag == true)
+    {
+        //Displayed message to confirm all relevent data has been shown
+        cout << endl << "That's all the information in the file matching the name provided." << endl << endl;
+        line();
+    }
+    else
+    {
+        //Displayed message when searched name is not in file
+        cout << endl << firstName << " " << lastName << " cannot be found in our records. Please try again." << endl;
+        line();
+        cout << endl;
+    }
+
+    //Close File
+    info.close();
+}
+
+//Function to search by Donor blood type & display ***READ FROM FILE FIX REQUIRED***
+void bloodGroup(fstream& info)
+{
+    Donor_Details record;
+    bool flag = false;
+    char bloodGroup[14];
+
+    system("cls"); //Clears console screen
+
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    //Error Message
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+    }
+
+    //User Input
+    cout << endl << "Search by Blood Group" << endl;
+
+    cout << "Enter Blood Type: ";
+    cin.getline(bloodGroup, 14);
+
+    cout << endl << "Retrieving matching records..." << endl;
+
+    // Read & search for matching data
+    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+    while (!info.eof())
+    {
+        if (strcmp(bloodGroup, record.blood_group) == 0) 
+        {
+            cout << endl << " First Name:      ";
+            cout << record.first_name << endl;
+            cout << " Last Name:       ";
+            cout << record.last_name << endl;
+            cout << " Date of Birth:       ";
+            cout << record.date_of_birth << endl;
+            cout << " Nationality:  ";
+            cout << record.nationality << endl;
+            cout << " Ethnicity:  ";
+            cout << record.ethnicity << endl;
+            cout << " Health Conditions:    ";
+            cout << record.health_conditions << endl;
+            cout << " Blood Group:       ";
+            cout << record.blood_group << endl;
+            cout << " Contact Number:       ";
+            cout << record.contact_number << endl;
+            cout << " Email Address:  ";
+            cout << record.email_address << endl;
+            cout << " Street Address:  ";
+            cout << record.address_line1 << endl;
+            cout << " Suburb/City:  ";
+            cout << record.address_line2 << endl;
+            cout << " Date of Last Donation:  ";
+            cout << record.last_donation << endl;
+
+            flag = true;
+        }
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+
+    if (flag == true)
+    {
+        //Displayed message to confirm all relevent data has been shown
+        cout << endl << "That's all the information in the file matching the Blood Type provided." << endl << endl;
+        line();
+    }
+    else
+    {
+        //Displayed message when searched name is not in file
+        cout << endl << bloodGroup <<  " cannot be found in our records. Please try again." << endl;
+        line();
+        cout << endl;
+    }
+
+    //Close File
+    info.close();
+}
+
+//Function to search by Donor loaction & display ***READ FROM FILE FIX REQUIRED***
+void location(fstream& info)
+{
+    Donor_Details record;
+    bool flag = false;
+    char location[51];
+
+    system("cls"); //Clears console screen
+
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    //Error Message
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+    }
+
+    //User Input
+    cout << endl << "Search by Location" << endl;
+
+    cout << "Enter Suburb/City: ";
+    cin.getline(location, 14);
+
+    cout << endl << "Retrieving matching records..." << endl;
+
+    // Read & search for matching data
+    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+    while (!info.eof())
+    {
+        if (strcmp(location, record.address_line2) == 0)
+        {
+            cout << endl << " First Name:      ";
+            cout << record.first_name << endl;
+            cout << " Last Name:       ";
+            cout << record.last_name << endl;
+            cout << " Date of Birth:       ";
+            cout << record.date_of_birth << endl;
+            cout << " Nationality:  ";
+            cout << record.nationality << endl;
+            cout << " Ethnicity:  ";
+            cout << record.ethnicity << endl;
+            cout << " Health Conditions:    ";
+            cout << record.health_conditions << endl;
+            cout << " Blood Group:       ";
+            cout << record.blood_group << endl;
+            cout << " Contact Number:       ";
+            cout << record.contact_number << endl;
+            cout << " Email Address:  ";
+            cout << record.email_address << endl;
+            cout << " Street Address:  ";
+            cout << record.address_line1 << endl;
+            cout << " Suburb/City:  ";
+            cout << record.address_line2 << endl;
+            cout << " Date of Last Donation:  ";
+            cout << record.last_donation << endl;
+
+            flag = true;
+        }
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+
+    if (flag == true)
+    {
+        //Displayed message to confirm all relevent data has been shown
+        cout << endl << "That's all the information in the file matching the location provided." << endl << endl;
+        line();
+    }
+    else
+    {
+        //Displayed message when searched name is not in file
+        cout << endl << location << " cannot be found in our records. Please try again." << endl;
+        line();
+        cout << endl;
+    }
+
+    //Close File
+    info.close();
+}
+
+//Function for Admin Login (fixed username & password)  ***COMPLETED***
+void admin_login(fstream& info)
+{
+    string username ("Admin");
+    string password ("Password");
+    string user;
+    string pass;
+    bool flag = false;
+
+    int attempt = 0;
+
+    system("cls"); //Clears console screen
+
+    border_line();
+    cout << endl << ("\x1B[35m\t\t\t\t  ABOUT AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    cout << " ADMIN LOGIN" << endl << endl;
+
+    while (attempt < 3)
+    {
+        cout << " Enter Username: ";
+        cin >> user;
+        cout << " Enter Password: ";
+        cin >> pass;
+
+        if ((user == username) && (pass == password))
+        {
+            flag = true;
+            admin_menu(info);
+        }
+        else if (flag == false)
+        {
+            cout << endl << "Incorrect Username or Password. Please try again." << endl;
+            line();
+            attempt++;
+        } 
+        while (attempt > 2)
+        {
+            cout << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
+        }
+    }
 
     line();
 }
 
-//Function to display Admin Menu (MAY COMBINE WITH ADMIN LOGIN)
-void admin_menu()
+//Function to display Admin Menu  ***IN PROGRESS***
+void admin_menu(fstream& info)
 {
     system("cls"); //Clears console screen
     cout << endl << "\tAOTEAROA BLOOD";
@@ -644,7 +1039,7 @@ void admin_menu()
     } while (option < 8);
 }
 
-//Function to display ----------
+//Function to display ---------- ***COMPLETED***
 void line()
 {
     cout << endl;
@@ -655,6 +1050,7 @@ void line()
     cout << endl;
 }
 
+//Function to display x----------x ***COMPLETED***
 void border_line()
 {
     cout << endl << "+";

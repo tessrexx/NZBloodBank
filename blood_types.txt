@@ -1,9 +1,0 @@
-None
-O-
-O+
-B-
-B+
-A-
-A+
-AB-
-AB+
