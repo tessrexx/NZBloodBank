@@ -86,9 +86,6 @@ void recipient_report();
 void line();
 void border_line();
 
-// Global Variable
-fstream info;
-
 // Main Function
 int main()
 {
@@ -111,8 +108,8 @@ void main_menu()
 
     do
     {
-        cout << " MAIN MENU" << endl << endl;
-
+        cout << endl << "  \tMAIN MENU" << endl;
+        cout << "--------------------------------" << endl << endl;
         cout << " 1. Information & Contact Us" << endl;
         cout << " 2. Existing Donor" << endl;
         cout << " 3. New Donor" << endl;
@@ -189,6 +186,7 @@ void main_menu()
 void donor_registration()
 {
     // Variables needed to write the file
+    fstream info;
     Donor_Details record;
 
     system("cls"); //Clears console screen
@@ -197,9 +195,8 @@ void donor_registration()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << " DONOR REGISTRATION";
-    line();
-
+    cout << "  \tDONOR REGISTRATION" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     // Open file
     info.open("Donor.dat", ios::out | ios::app | ios::binary);
@@ -247,7 +244,7 @@ void donor_registration()
         cout << endl << "  Known Health Condition/s: ";
         cin.getline(record.health_conditions, SIZE);
 
-        cout << "  Blood Group (AB+, AB-, A+, A-, B+, B-, O+, O-): ";
+        cout << endl << "  Blood Group (AB+, AB-, A+, A-, B+, B-, O+, O-): ";
         cin.getline(record.blood_group, SIZE);
 
         cout << "  Contact Number: ";
@@ -290,13 +287,14 @@ void donor_registration()
         // Close the file
         info.close();
     }
-    cout << endl << "Thank you for registering! Please select Option 2 in the Main Menu to Login." << endl << endl;
+    cout << endl << "Thank you for registering! Please select Option 2 in the Main Menu to Login." << endl;
     line();
 }
 
 //Existing Donor Login  ***COMPLETED***
 void donor_login()
 {
+    fstream info;
     Donor_Details record;
     bool flag = false;
     char name[SIZE];
@@ -309,8 +307,8 @@ void donor_login()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << " DONOR LOGIN";
-    line();
+    cout << endl << "  \tDONOR LOGIN" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
@@ -325,7 +323,7 @@ void donor_login()
         while (attempt < 3)
         {
             //User Input
-            cout << endl << "Enter Username: ";
+            cout << "Enter Username: ";
             cin.getline(name, SIZE);
             cout << "Enter Password: ";
             cin.getline(pass, SIZE);
@@ -379,8 +377,8 @@ void donor_menu()
     do
     {
         //Donor Menu Display
-        cout << " DONOR MENU";
-        line();
+        cout << endl << "  \tDONOR MENU" << endl;
+        cout << "--------------------------------" << endl << endl;
         cout << " 1. Procedure to Donate Blood" << endl;
         cout << " 2. Benefits of Blood Donation" << endl;
         cout << " 3. Book Donation Appointment" << endl;
@@ -484,9 +482,9 @@ void view_information()
 
     do
     {
-        //Donor Menu Display
-        cout << " MANAGE INFORMATION";
-        line();
+        //Info Menu Display
+        cout << endl << " \tMANAGE INFORMATION" << endl;
+        cout << "--------------------------------" << endl << endl;
         cout << " 1. View Information" << endl;
         cout << " 2. Update Information" << endl;
         cout << " 3. Back to Main Menu" << endl;
@@ -505,6 +503,9 @@ void view_information()
             cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
 
+            cout << endl << " \tVIEW INFORMATION" << endl;
+            cout << "--------------------------------" << endl << endl;
+
             // Open the file for reading
             info.open("Donor.dat", ios::in | ios::binary);
             //Error Message
@@ -521,26 +522,23 @@ void view_information()
                 info.seekp(recordNumber * sizeof(record));
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
-                while (!info.eof())
-                {
-                    cout << endl << "  First Name:            " << record.first_name;
-                    cout << endl << "  Last Name:             " << record.last_name;
-                    cout << endl << "  Date of Birth:         " << record.date_of_birth;
-                    cout << endl << "  Gender:                " << record.gender;
-                    cout << endl << "  Nationality:           " << record.nationality;
-                    cout << endl << "  Ethnicity:             " << record.ethnicity;
-                    cout << endl << "  Health Conditions:     " << record.health_conditions;
-                    cout << endl << "  Blood Group:           " << record.blood_group;
-                    cout << endl << "  Contact Number:        " << record.contact_number;
-                    cout << endl << "  Email Address:         " << record.email_address;
-                    cout << endl << "  Street Address:        " << record.address_line1;
-                    cout << endl << "  Suburb/City:           " << record.address_line2;
-                    cout << endl << "  Date of Last Donation: " << record.last_donation;
-                    cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                    cout << "----------------------------------" << endl << endl;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << "----------------------------------" << endl;
 
-                    info.read(reinterpret_cast<char*>(&record), sizeof(record));
-                }
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
             }
             //Close File
             info.close();
@@ -573,15 +571,13 @@ void update_information()
     Donor_Details record, record2;
     fstream info;
     long long int recordNumber;
-    int option;
 
     system("cls"); //Clears console screen
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     line();
 
-    //Main Menu Display
-    cout << " Manage/Update Information";
-    line();
+    cout << endl << "  \tUPDATE INFORMATION" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     info.open("Donor.dat", ios::in | ios::out | ios::binary);
 
@@ -669,6 +665,7 @@ void update_information()
 void recipient_registration()
 {
     // Variables needed to write the file
+    fstream info;
     Recipient_Details record;
 
     system("cls"); //Clears console screen
@@ -677,8 +674,8 @@ void recipient_registration()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << " RECIPIENT REGISTRATION";
-    line();
+    cout << endl << "    RECIPIENT REGISTRATION" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     // Open file
     info.open("Recipient.dat", ios::out | ios::app | ios::binary);
@@ -691,7 +688,7 @@ void recipient_registration()
     // User input & writing in data file
     else
     {
-        cout << endl << "  First Name: ";
+        cout << "  First Name: ";
         cin.getline(record.name, SIZE);
 
         cout << "  Contact Number: ";
@@ -720,13 +717,15 @@ void recipient_registration()
         // Close the file
         info.close();
     }
-    cout << endl << "Thank you for registering! Please select Option 4 in the Main Menu to Login." << endl << endl;
+    cout << endl << "Thank you for registering! Please select Option 4 in the Main Menu to Login." << endl;
+    line();
 }
 
 //Existing Recipient Login  ***COMPLETED***
 void recipient_login()
 {
     Recipient_Details record;
+    fstream info;
     bool flag = false;
     char name[SIZE];
     char pass[SIZE];
@@ -738,6 +737,8 @@ void recipient_login()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
+    cout << endl << "  \tRECIPIENT LOGIN" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     // Open the file for reading
     info.open("Recipient.dat", ios::in | ios::binary);
@@ -751,7 +752,7 @@ void recipient_login()
         while (attempt < 3)
         {
             //User Input
-            cout << endl << "Enter Username: ";
+            cout << "Enter Username: ";
             cin.getline(name, SIZE);
             cout << "Enter Password: ";
             cin.getline(pass, SIZE);
@@ -805,8 +806,8 @@ void recipient_menu()
     while (1)
     {
         //Main Menu Display
-        cout << " Recipient Menu";
-        line();
+        cout << endl << "  \tRECIPIENT MENU" << endl;
+        cout << "--------------------------------" << endl << endl;
         cout << " Access Donor Information via: " << endl;
         cout << " 1. Full Name" << endl;
         cout << " 2. Blood Group" << endl;
@@ -856,6 +857,7 @@ void recipient_menu()
 void full_name()
 {
     Donor_Details record;
+    fstream info;
     bool flag = false;
     char firstName[SIZE];
     char lastName[SIZE];
@@ -885,7 +887,8 @@ void full_name()
         cout << " Enter Last Name: ";
         cin.getline(lastName, SIZE);
 
-        cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << "Retrieving matching records..." << endl << endl;
+        cout << endl << " ----------------------------------";
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -909,7 +912,7 @@ void full_name()
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
                 cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << "----------------------------------" << endl;
+                cout << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -918,7 +921,7 @@ void full_name()
         if (flag == true)
         {
             //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the name provided." << endl << endl;
+            cout << endl << "That's all the information in the file matching the name provided." << endl;
             line();
         }
         else
@@ -937,6 +940,7 @@ void full_name()
 void blood_group()
 {
     Donor_Details record;
+    fstream info;
     bool flag = false;
     char bloodGroup[14];
 
@@ -963,6 +967,7 @@ void blood_group()
         cin.getline(bloodGroup, 14);
 
         cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << " ----------------------------------";
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -986,7 +991,7 @@ void blood_group()
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
                 cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << "----------------------------------" << endl;
+                cout << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -995,7 +1000,7 @@ void blood_group()
         if (flag == true)
         {
             //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the Blood Type provided." << endl << endl;
+            cout << endl << "That's all the information in the file matching the Blood Type provided." << endl;
             line();
         }
         else
@@ -1015,6 +1020,7 @@ void blood_group()
 void location()
 {
     Donor_Details record;
+    fstream info;
     bool flag = false;
     char location[51];
 
@@ -1037,17 +1043,18 @@ void location()
         //User Input
         cout << endl << "Search by Location" << endl << endl;
 
-        cout << " Enter Suburb/City: ";
+        cout << " Enter Clinic Location: ";
         cin.getline(location, 14);
 
         cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << " ----------------------------------";
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
         while (!info.eof())
         {
-            if (strcmp(location, record.address_line2) == 0)
+            if (strcmp(location, record.clinic_location) == 0)
             {
                 cout << endl << "  Record Number:         " << record.record_number;
                 cout << endl << "  First Name:            " << record.first_name;
@@ -1064,7 +1071,7 @@ void location()
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
                 cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << "--------------------------------- " << endl;
+                cout << " --------------------------------- " << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1073,7 +1080,7 @@ void location()
         if (flag == true)
         {
             //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the location provided." << endl << endl;
+            cout << endl << "That's all the information in the file matching the location provided." << endl;
             line();
         }
         else
@@ -1104,7 +1111,8 @@ void admin_login()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << " ADMIN LOGIN" << endl << endl;
+    cout << endl << " \tADMIN LOGIN" << endl;
+    cout << "--------------------------------" << endl << endl;
 
     while (attempt < 3)
     {
@@ -1139,8 +1147,6 @@ void admin_login()
 //Function to display Admin Menu  ***COMPLETED***
 void admin_menu()
 {
-    Recipient_Details recipientRecord;
-    Donor_Details donorRecord;
     int option;
 
     border_line();
@@ -1150,8 +1156,8 @@ void admin_menu()
     do
     {
         //Main Menu Display
-        cout << " ADMIN MENU";
-        line();
+        cout << endl << "  \tADMIN MENU" << endl;
+        cout << "--------------------------------" << endl << endl;
         cout << " 1. View Recipient Information" << endl;
         cout << " 2. View Donor Information" << endl;
         cout << " 3. Update Donor's Blood Report" << endl;
@@ -1182,7 +1188,6 @@ void admin_menu()
         case 3: // Update Donor's Blood Report
         {
             update_blood();
-            line();
             break;
         }
         case 4: // Donors Report
@@ -1203,7 +1208,6 @@ void admin_menu()
         case 7: // Recipient Report
         {
             recipient_report();
-            line();
             break;
         }
         case 8:
@@ -1216,9 +1220,11 @@ void admin_menu()
         }
     } while (option < 8);
 }
-//Function for Admin to search and view Recipient Information ***COMPLETED?***
+
+//Function for Admin to search and view Recipient Information ***COMPLETED***
 void search_recipient()
 {
+    fstream info;
     Recipient_Details record;
     bool flag = false;
     char name[SIZE];
@@ -1242,11 +1248,12 @@ void search_recipient()
         //User Input
         cout << endl << "Search by Recipient's Name" << endl << endl;
 
-        cout << " Enter First Name: ";
+        cout << " Enter Name: ";
         cin.getline(name, SIZE);
 
 
         cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << " ----------------------------------" << endl;
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1255,17 +1262,13 @@ void search_recipient()
         {
             if ((strcmp(name, record.name) == 0))
             {
-                cout << endl << " First Name:            ";
-                cout << record.name << endl;
-                cout << " Contact Number:        ";
-                cout << record.contact_number << endl;
-                cout << " Email Address:         ";
-                cout << record.email_address << endl;
-                cout << " Street Address:        ";
-                cout << record.address_line1 << endl;
-                cout << " Suburb/City:           ";
-                cout << record.address_line2 << endl;
-                cout << "----------------------------------" << endl;
+                cout << endl << " Name:                  " << record.name;
+                cout << endl << " Contact Number:        " << record.contact_number;
+                cout << endl << " Email Address:         " << record.email_address;
+                cout << endl << " Street Address:        " << record.address_line1;
+                cout << endl << " Suburb/City:           " << record.address_line2;
+                cout << endl << " Registration Status:   " << record.registration_status << endl;
+                cout << endl << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1274,7 +1277,7 @@ void search_recipient()
         if (flag == true)
         {
             //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the name provided." << endl << endl;
+            cout << endl << "That's all the information in the file matching the name provided." << endl;
             line();
         }
         else
@@ -1289,10 +1292,11 @@ void search_recipient()
     info.close();
 }
 
-//Function for Admin to search and view Donor Information ***COMPLETED?***
+//Function for Admin to search and view Donor Information ***COMPLETED***
 void search_donor()
 {
     Donor_Details record;
+    fstream info;
     bool flag = false;
     char firstName[SIZE];
     char lastName[SIZE];
@@ -1323,6 +1327,7 @@ void search_donor()
         cin.getline(lastName, SIZE);
 
         cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << " ----------------------------------" << endl;
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1346,7 +1351,7 @@ void search_donor()
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
                 cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << "----------------------------------" << endl;
+                cout << endl << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1355,7 +1360,7 @@ void search_donor()
         if (flag == true)
         {
             //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the name provided." << endl << endl;
+            cout << endl << "That's all the information in the file matching the name provided." << endl;
             line();
         }
         else
@@ -1376,10 +1381,11 @@ void update_blood()
 
 }
 
-//Function for Admin to view complete Donor Report ***COMPLETED?***
+//Function for Admin to view complete Donor Report ***COMPLETED***
 void donor_report()
 {
     Donor_Details record;
+    fstream info;
 
     system("cls"); //Clears console screen
 
@@ -1387,8 +1393,8 @@ void donor_report()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << endl << "DONOR LIST";
-    line();
+    cout << endl << "  \tDONOR LIST" << endl;
+    cout << "--------------------------------" << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
@@ -1405,30 +1411,21 @@ void donor_report()
 
         while (!info.eof())
         {
-            cout << endl << " First Name:            ";
-            cout << record.first_name << endl;
-            cout << " Last Name:             ";
-            cout << record.last_name << endl;
-            cout << " Date of Birth:         ";
-            cout << record.date_of_birth << endl;
-            cout << " Nationality:           ";
-            cout << record.nationality << endl;
-            cout << " Ethnicity:             ";
-            cout << record.ethnicity << endl;
-            cout << " Health Conditions:     ";
-            cout << record.health_conditions << endl;
-            cout << " Blood Group:           ";
-            cout << record.blood_group << endl;
-            cout << " Contact Number:        ";
-            cout << record.contact_number << endl;
-            cout << " Email Address:         ";
-            cout << record.email_address << endl;
-            cout << " Street Address:        ";
-            cout << record.address_line1 << endl;
-            cout << " Suburb/City:           ";
-            cout << record.address_line2 << endl;
-            cout << " Date of Last Donation: ";
-            cout << record.last_donation << endl;
+            cout << endl << " Record Number:         " << record.record_number;
+            cout << endl << " First Name:            " << record.first_name;
+            cout << endl << " Last Name:             " << record.last_name;
+            cout << endl << " Date of Birth:         " << record.date_of_birth;
+            cout << endl << " Gender:                " << record.gender;
+            cout << endl << " Nationality:           " << record.nationality;
+            cout << endl << " Ethnicity:             " << record.ethnicity;
+            cout << endl << " Health Conditions:     " << record.health_conditions;
+            cout << endl << " Blood Group:           " << record.blood_group;
+            cout << endl << " Contact Number:        " << record.contact_number;
+            cout << endl << " Email Address:         " << record.email_address;
+            cout << endl << " Street Address:        " << record.address_line1;
+            cout << endl << " Suburb/City:           " << record.address_line2;
+            cout << endl << " Date of Last Donation: " << record.last_donation;
+            cout << endl << " Clinic Location:       " << record.clinic_location << endl << endl;
             cout << "----------------------------------" << endl;
 
             //Read one structure at time & display
@@ -1443,10 +1440,11 @@ void donor_report()
     line();
 }
 
-//Function for Admin to search and view Blood Report ***IN PROGRESS***
+//Function for Admin to search and view Blood Report ***COMPLETED***
 void blood_report()
 {
     Donor_Details record;
+    fstream info;
 
     system("cls"); //Clears console screen
 
@@ -1454,8 +1452,8 @@ void blood_report()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << endl << "BLOOD GROUP REPORT";
-    line();
+    cout << endl << "\tBLOOD GROUP REPORT" << endl;
+    cout << "--------------------------------" << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
@@ -1490,10 +1488,11 @@ void blood_report()
     line();
 }
 
-//Function for Admin to search and view Location Report ***IN PROGRESS***
+//Function for Admin to search and view Location Report ***COMPLETED***
 void location_report()
 {
     Donor_Details record;
+    fstream info;
 
     system("cls"); //Clears console screen
 
@@ -1501,8 +1500,8 @@ void location_report()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << endl << "LOCATION REPORT";
-    line();
+    cout << endl << "\tLOCATION REPORT" << endl;
+    cout << "--------------------------------" << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
@@ -1537,10 +1536,11 @@ void location_report()
     line();
 }
 
-//Function for Admin to view complete Recipient Report ***COMPLETED?***
+//Function for Admin to view complete Recipient Report ***COMPLETED***
 void recipient_report()
 {
     Recipient_Details record;
+    fstream info;
 
     system("cls"); //Clears console screen
 
@@ -1548,8 +1548,8 @@ void recipient_report()
     cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
-    cout << endl << "RECIPIENT LIST";
-    line();
+    cout << endl << "  \tRECIPIENT LIST" << endl;
+    cout << "--------------------------------" << endl;
 
     // Open the file for reading
     info.open("Recipient.dat", ios::in | ios::binary);
@@ -1566,17 +1566,13 @@ void recipient_report()
 
         while (!info.eof())
         {
-            cout << endl << " First Name:            ";
-            cout << record.name << endl;
-            cout << " Contact Number:        ";
-            cout << record.contact_number << endl;
-            cout << " Email Address:         ";
-            cout << record.email_address << endl;
-            cout << " Street Address:        ";
-            cout << record.address_line1 << endl;
-            cout << " Suburb/City:           ";
-            cout << record.address_line2 << endl;
-            cout << "----------------------------------" << endl;
+            cout << endl << " Name:                  " << record.name;
+            cout << endl << " Contact Number:        " << record.contact_number;
+            cout << endl << " Email Address:         " << record.email_address;
+            cout << endl << " Street Address:        " << record.address_line1;
+            cout << endl << " Suburb/City:           " << record.address_line2;
+            cout << endl << " Registration Status:   " << record.registration_status << endl;
+            cout << endl << " ----------------------------------" << endl;
 
             //Read one structure at time & display
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
