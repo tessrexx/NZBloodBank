@@ -31,10 +31,22 @@ struct Donor_Details //Includes Registration Details
     char address_line2[SIZE];
     char last_donation[14];
     char clinic_location[SIZE];
-    char appointment[14];
+    char booking_day[14];
+    char booking_time[14];
 
     char username[SIZE];
     char password[SIZE];
+};
+
+// Structure for Booking Days
+struct weekDays
+{
+    int week;
+    char monday1[25], monday2[25], monday3[25], monday4[25], monday5[25], monday6[25], monday7[25];
+    char tuesday1[25], tuesday2[25], tuesday3[25], tuesday4[25], tuesday5[25], tuesday6[25], tuesday7[25];
+    char wednesday1[25], wednesday2[25], wednesday3[25], wednesday4[25], wednesday5[25], wednesday6[25], wednesday7[25];
+    char thursday1[25], thursday2[25], thursday3[25], thursday4[25], thursday5[25], thursday6[25], thursday7[25];
+    char friday1[25], friday2[25], friday3[25], friday4[25], friday5[25], friday6[25], friday7[25];
 };
 
 //Structure containing information required to register a new recipient
@@ -45,7 +57,7 @@ struct Recipient_Details
     char email_address[SIZE];
     char address_line1[SIZE];
     char address_line2[SIZE];
-    char registration_status[14]; // <----- Recipients validation status (valid registration to access blood) = Unsure what this is but listed in brief
+    char registration_status[14];
 
     char username[SIZE];
     char password[SIZE];
@@ -58,6 +70,7 @@ void main_menu();
 // Donor Functions
 void donor_registration();
 void donor_login();
+bool search_donor_file(char name[], char pass[]);
 void donor_menu();
 void book_donation();
 void view_information();
@@ -65,6 +78,7 @@ void update_information();
 
 // Recipient Functions
 void recipient_login();
+bool search_recipient_file(char name[], char pass[]);
 void recipient_registration();
 void recipient_menu();
 void full_name();
@@ -90,7 +104,7 @@ void border_line();
 int main()
 {
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << "  Welcome to Aotearoa Blood, where we make blood donation easy." << endl;
@@ -192,7 +206,7 @@ void donor_registration()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << "  \tDONOR REGISTRATION" << endl;
@@ -259,7 +273,7 @@ void donor_registration()
         cout << "  Suburb/City: ";
         cin.getline(record.address_line2, SIZE);
 
-        cout << "  Date of Last Donation (Optional): ";
+        cout << "  Date of Last Donation (If applicable): ";
         cin.getline(record.last_donation, 14);
 
         cout << endl << "  Available Clinic Locations" << endl;
@@ -304,7 +318,7 @@ void donor_login()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << "  \tDONOR LOGIN" << endl;
@@ -320,7 +334,7 @@ void donor_login()
     }
     else
     {
-        while (attempt < 3)
+        for (attempt = 0; attempt < 3; attempt++)
         {
             //User Input
             cout << "Enter Username: ";
@@ -328,41 +342,50 @@ void donor_login()
             cout << "Enter Password: ";
             cin.getline(pass, SIZE);
 
-
-            // Read & search for matching data
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-            while (!info.eof())
+            if (search_donor_file(name, pass))
             {
-                if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
-                {
-                    system("cls"); //Clears console screen
-                    cout << "\t\t\t\t\t\t\t\t\tWelcome back " << record.first_name << "!";
-                    flag = true;
-                }
-                info.read(reinterpret_cast<char*>(&record), sizeof(record));
-            }
-
-            // Show if no matching details found
-            if (flag == true)
-            {
+                system("cls");
+                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!";
                 donor_menu();
+                flag = true;
+                break;
             }
-            else if (flag == false)
+            if (flag == false)
             {
-                cout << endl << "Incorrect Username or Password. Please try again." << endl;
-                line();
-                attempt++;
+                cout << endl << "Incorrect Username or Password. Please try again." << endl << endl;
             }
-            while (attempt > 2)
-            {
-                cout << "Limit reached. Program Exited..." << endl << endl;
-                exit(0);
-            }
+        }
+        if (attempt > 2)
+        {
+            cout << endl << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
         }
     }
     //Close File
     info.close();
+}
+
+//Function to check login against donor data file ***COMPLETED***
+bool search_donor_file(char name[], char pass[])
+{
+    bool flag = false;
+    fstream info;
+    Donor_Details record;
+    info.open("Donor.dat", ios::in | ios::binary);
+
+    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    while (!info.eof())
+    {
+        if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
+        {
+            flag = true;
+            break;
+        }
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+
+    info.close();
+    return flag;
 }
 
 //Function to display Donor Menu  ***COMPLETED***
@@ -371,7 +394,7 @@ void donor_menu()
     int option;
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
@@ -461,10 +484,256 @@ void donor_menu()
     } while (option < 6);
 }
 
-//Function for donors to book donation  ***IN PROGRESS ***
+//Function for donors to book donation  ***IN PROGRESS***
 void book_donation()
 {
+    Donor_Details record;
+    fstream info;
+    long long int recordNumber;
 
+    weekDays weekday = { 0, "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Monday
+        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Tuesday
+        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Wednesday
+        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Thursday
+        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm" }; // Friday
+
+    system("cls");
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+
+    cout << endl << " Thank you for considering donating, your kindness helps others." << endl;
+    cout << " Below are our current time slots avaliable. We are open on week days, 9:00am till 4:00pm." << endl;
+    line();
+
+    // Open file
+    info.open("Donor.dat", ios::out | ios::app | ios::binary);
+    if (!info)
+    {
+        //Error message for non-existent file
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        cout << endl << " Enter your Record Number: ";
+        cin >> recordNumber;
+        cin.ignore();
+
+        cout << endl << "  _____________________________________________________________________________________________ ";
+        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
+        cout << endl << " |" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << "|";
+        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
+
+        border_line();
+        cout << " |   MONDAY   |  " << weekday.monday1 << "  |  " << weekday.monday2 << "  |  " << weekday.monday3 << "  |  " << weekday.monday4 << "  |  " << weekday.monday5 << "  |  " << weekday.monday6 << "  |  " << weekday.monday7 << "  |";
+        border_line();
+        cout << " |  TUESDAY   |  " << weekday.tuesday1 << "  |  " << weekday.tuesday2 << "  |  " << weekday.tuesday3 << "  |  " << weekday.tuesday4 << "  |  " << weekday.tuesday5 << "  |  " << weekday.tuesday6 << "  |  " << weekday.tuesday7 << "  |";
+        border_line();
+        cout << " |  WEDNESDAY |  " << weekday.wednesday1 << "  |  " << weekday.wednesday2 << "  |  " << weekday.wednesday3 << "  |  " << weekday.wednesday4 << "  |  " << weekday.wednesday5 << "  |  " << weekday.wednesday6 << "  |  " << weekday.wednesday7 << "  |";
+        border_line();
+        cout << " |  THURSDAY  |  " << weekday.thursday1 << "  |  " << weekday.thursday2 << "  |  " << weekday.thursday3 << "  |  " << weekday.thursday4 << "  |  " << weekday.thursday5 << "  |  " << weekday.thursday6 << "  |  " << weekday.thursday7 << "  |";
+        border_line();
+        cout << " |   FRIDAY   |  " << weekday.friday1 << "  |  " << weekday.friday2 << "  |  " << weekday.friday3 << "  |  " << weekday.friday4 << "  |  " << weekday.friday5 << "  |  " << weekday.friday6 << "  |  " << weekday.friday7 << "  |";
+        border_line();
+
+        cout << endl << endl << " Enter the preferred day? ";
+        cin.getline(record.booking_day, 14);
+
+        cout << endl << " Enter the preferred time? ";
+        cin.getline(record.booking_time, 14);
+
+        // MONDAY -------------------------------------------
+        if (record.booking_day == "monday")
+        {
+            if (record.booking_time == "9:00am")
+            {
+                strcpy_s(weekday.monday1, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "10:00am")
+            {
+                strcpy_s(weekday.monday2, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "11:00am")
+            {
+                strcpy_s(weekday.monday3, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "12:00pm")
+            {
+                strcpy_s(weekday.monday4, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "2:00pm")
+            {
+                strcpy_s(weekday.monday5, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "3:00pm")
+            {
+                strcpy_s(weekday.monday6, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "4:00pm")
+            {
+                strcpy_s(weekday.monday7, ("\x1B[31m Booked\033[0m"));
+            }
+        }
+
+        // TUESDAY -------------------------------------------
+        if (record.booking_day == "tuesday")
+        {
+            if (record.booking_time == "9:00am")
+            {
+                strcpy_s(weekday.tuesday1, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "10:00am")
+            {
+                strcpy_s(weekday.tuesday2, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "11:00am")
+            {
+                strcpy_s(weekday.tuesday3, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "12:00pm")
+            {
+                strcpy_s(weekday.tuesday4, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "2:00pm")
+            {
+                strcpy_s(weekday.tuesday5, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "3:00pm")
+            {
+                strcpy_s(weekday.tuesday6, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "4:00pm")
+            {
+                strcpy_s(weekday.tuesday7, ("\x1B[31m Booked\033[0m"));
+            }
+        }
+
+        // WEDNESDAY --------------------------------------
+        if (record.booking_day == "wednesday")
+        {
+            if (record.booking_time == "9:00am")
+            {
+                strcpy_s(weekday.wednesday1, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "10:00am")
+            {
+                strcpy_s(weekday.wednesday2, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "11:00am")
+            {
+                strcpy_s(weekday.wednesday3, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "12:00pm")
+            {
+                strcpy_s(weekday.wednesday4, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "2:00pm")
+            {
+                strcpy_s(weekday.wednesday5, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "3:00pm")
+            {
+                strcpy_s(weekday.wednesday6, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "4:00pm")
+            {
+                strcpy_s(weekday.wednesday7, ("\x1B[31m Booked\033[0m"));
+            }
+        }
+
+        // THURSDAY -------------------------------------
+        if (record.booking_day == "thursday")
+        {
+            if (record.booking_time == "9:00am")
+            {
+                strcpy_s(weekday.thursday1, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "10:00am")
+            {
+                strcpy_s(weekday.thursday2, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "11:00am")
+            {
+                strcpy_s(weekday.thursday3, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "12:00pm")
+            {
+                strcpy_s(weekday.thursday4, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "2:00pm")
+            {
+                strcpy_s(weekday.thursday5, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "3:00pm")
+            {
+                strcpy_s(weekday.thursday6, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "4:00pm")
+            {
+                strcpy_s(weekday.thursday7, ("\x1B[31m Booked\033[0m"));
+            }
+        }
+
+        // FRIDAY -----------------------------------------------
+        if (record.booking_day == "friday")
+        {
+            if (record.booking_time == "9:00am")
+            {
+                strcpy_s(weekday.friday1, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "10:00am")
+            {
+                strcpy_s(weekday.friday2, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "11:00am")
+            {
+                strcpy_s(weekday.friday3, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "12:00pm")
+            {
+                strcpy_s(weekday.friday4, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "2:00pm")
+            {
+                strcpy_s(weekday.friday5, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "3:00pm")
+            {
+                strcpy_s(weekday.friday6, ("\x1B[31m Booked\033[0m"));
+            }
+            else if (record.booking_time == "4:00pm")
+            {
+                strcpy_s(weekday.friday7, ("\x1B[31m Booked\033[0m"));
+            }
+        }
+
+        cout << endl << endl << " Your booking has been confirmed!";
+        cout << endl << " Your appointment to donate blood is on " << record.booking_day << " at " << record.booking_time;
+
+        /*cout << endl << "  _____________________________________________________________________________________________ ";
+        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
+        cout << endl << " |" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << "|";
+        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
+
+        border_line();
+        cout << " |   MONDAY   |  " << weekday.monday1 << "  |  " << weekday.monday2 << "  |  " << weekday.monday3 << "  |  " << weekday.monday4 << "  |  " << weekday.monday5 << "  |  " << weekday.monday6 << "  |  " << weekday.monday7 << "  |";
+        border_line();
+        cout << " |  TUESDAY   |  " << weekday.tuesday1 << "  |  " << weekday.tuesday2 << "  |  " << weekday.tuesday3 << "  |  " << weekday.tuesday4 << "  |  " << weekday.tuesday5 << "  |  " << weekday.tuesday6 << "  |  " << weekday.tuesday7 << "  |";
+        border_line();
+        cout << " |  WEDNESDAY |  " << weekday.wednesday1 << "  |  " << weekday.wednesday2 << "  |  " << weekday.wednesday3 << "  |  " << weekday.wednesday4 << "  |  " << weekday.wednesday5 << "  |  " << weekday.wednesday6 << "  |  " << weekday.wednesday7 << "  |";
+        border_line();
+        cout << " |  THURSDAY  |  " << weekday.thursday1 << "  |  " << weekday.thursday2 << "  |  " << weekday.thursday3 << "  |  " << weekday.thursday4 << "  |  " << weekday.thursday5 << "  |  " << weekday.thursday6 << "  |  " << weekday.thursday7 << "  |";
+        border_line();
+        cout << " |   FRIDAY   |  " << weekday.friday1 << "  |  " << weekday.friday2 << "  |  " << weekday.friday3 << "  |  " << weekday.friday4 << "  |  " << weekday.friday5 << "  |  " << weekday.friday6 << "  |  " << weekday.friday7 << "  |";
+        border_line();*/
+    }
+
+    // Move to the right place in file and write the record
+    info.write(reinterpret_cast<char*>(&record), sizeof(record));
+    // Close File
+    info.close();
 }
 
 //Function for donors to view their information  ***COMPLETED***
@@ -477,7 +746,7 @@ void view_information()
 
     system("cls"); //Clears console screen
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
@@ -568,97 +837,297 @@ void view_information()
 //Function for donors to update their information  ***COMPLETED***
 void update_information()
 {
-    Donor_Details record, record2;
+    Donor_Details record;
     fstream info;
+    int option;
     long long int recordNumber;
 
     system("cls"); //Clears console screen
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    line();
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
 
-    cout << endl << "  \tUPDATE INFORMATION" << endl;
-    cout << "--------------------------------" << endl << endl;
-
-    info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
-    if (!info)
+    do
     {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        cout << "Enter your Record Number: ";
-        cin >> recordNumber;
+        //  Update Info Menu 
+        cout << endl << " UPDATE INFORMATION" << endl;
+        cout << "--------------------------------" << endl << endl;
+        cout << " 1. Contact Number" << endl;
+        cout << " 2. Email Address" << endl;
+        cout << " 3. Physical Address" << endl;
+        cout << " 4. Health Conditions" << endl;
+        cout << " 5. Donation Appointment" << endl;
+        cout << " 6. Back to Donor Menu" << endl;
 
-        info.seekg(recordNumber * sizeof(record), ios::beg);
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        cout << endl << " Enter the option you'd like to update: "; //User Option Input
+        cin >> option;
+        cin.ignore(); //Clears input buffer
+        cout << endl;
 
-        cout << endl << "  Record Number:         " << record.record_number;
-        cout << endl << "  First Name:            " << record.first_name;
-        cout << endl << "  Last Name:             " << record.last_name;
-        cout << endl << "  Date of Birth:         " << record.date_of_birth;
-        cout << endl << "  Gender:                " << record.gender;
-        cout << endl << "  Nationality:           " << record.nationality;
-        cout << endl << "  Ethnicity:             " << record.ethnicity;
-        cout << endl << "  Health Conditions:     " << record.health_conditions;
-        cout << endl << "  Blood Group:           " << record.blood_group;
-        cout << endl << "  Contact Number:        " << record.contact_number;
-        cout << endl << "  Email Address:         " << record.email_address;
-        cout << endl << "  Street Address:        " << record.address_line1;
-        cout << endl << "  Suburb/City:           " << record.address_line2;
-        cout << endl << "  Date of Last Donation: " << record.last_donation;
-        cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-        cout << "----------------------------------" << endl;
+        switch (option)
+        {
+        case 1: // Contact Number
+        {
+            system("cls"); //Clears console screen
+            border_line();
+            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
 
-        //Get new data from user and edit in-memory record
-        cout << endl << "Enter the new data: " << endl << endl;
+            cout << endl << "UPDATE CONTACT NUMBER" << endl;
+            cout << "--------------------------------" << endl << endl;
 
-        cout << "Record Number: ";
-        cin >> record2.record_number;
-        cin.ignore();
-        cout << endl << "  First Name: ";
-        cin.getline(record2.first_name, SIZE);
-        cout << "  Last Name: ";
-        cin.getline(record2.last_name, SIZE);
-        cout << "  Date of Birth: ";
-        cin.getline(record2.date_of_birth, 14);
-        cout << "  Gender: ";
-        cin.getline(record2.gender, SIZE);
-        cout << "  Nationality: ";
-        cin.getline(record2.nationality, SIZE);
-        cout << "  Ethnicity: ";
-        cin.getline(record2.ethnicity, SIZE);
-        cout << "  Health Conditions: ";
-        cin.getline(record2.health_conditions, SIZE);
-        cout << "  Blood Group: ";
-        cin.getline(record2.blood_group, SIZE);
-        cout << "  Contact Number: ";
-        cin.getline(record2.contact_number, 14);
-        cout << "  Email Address: ";
-        cin.getline(record2.email_address, SIZE);
-        cout << "  Street Address: ";
-        cin.getline(record2.address_line1, SIZE);
-        cout << "  Suburb/City: ";
-        cin.getline(record2.address_line2, SIZE);
-        cout << "  Date of Last Donation (Optional): ";
-        cin.getline(record2.last_donation, 14);
-        cout << endl << "  Clinic Location: ";
-        cin.getline(record2.clinic_location, SIZE);
+            info.open("Donor.dat", ios::in | ios::out | ios::binary);
 
-        cout << endl << endl << "  Username: ";
-        cin.getline(record2.username, SIZE);
-        cout << "  Password: ";
-        cin.getline(record2.password, SIZE);
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << "Enter your Record Number: ";
+                cin >> recordNumber;
+                cin.ignore();
 
-        // Move to the right place in file and write the record
-        info.seekp(recordNumber * sizeof(record2), ios::beg);
-        info.write(reinterpret_cast<char*>(&record2), sizeof(record2));
-    }
+                info.seekg(recordNumber * sizeof(record), ios::beg);
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
-    // Close the file
-    info.close();
-    line();
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << "----------------------------------" << endl;
+
+                //Get new data from user and edit in-memory record
+                cout << endl << "Enter the new data: " << endl << endl;
+
+                cout << "  Contact Number: ";
+                cin.getline(record.contact_number, 14);
+
+                // Move to the right place in file and write the record
+                info.seekp(recordNumber * sizeof(record), ios::beg);
+                info.write(reinterpret_cast<char*>(&record), sizeof(record));
+            }
+
+            cout << endl << "Your contact number has now been updated!" << endl;
+            // Close the file
+            info.close();
+            line();
+            break;
+        }
+        case 2: // Email Address
+        {
+            system("cls"); //Clears console screen
+            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            line();
+
+            cout << endl << "UPDATE EMAIL ADDRESS" << endl;
+            cout << "--------------------------------" << endl << endl;
+
+            info.open("Donor.dat", ios::in | ios::out | ios::binary);
+
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << "Enter your Record Number: ";
+                cin >> recordNumber;
+                cin.ignore();
+
+                info.seekg(recordNumber * sizeof(record), ios::beg);
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << "----------------------------------" << endl;
+
+                //Get new data from user and edit in-memory record
+                cout << endl << "Enter the new data: " << endl << endl;
+
+                cout << "  Email Address: ";
+                cin.getline(record.email_address, SIZE);
+
+                // Move to the right place in file and write the record
+                info.seekp(recordNumber * sizeof(record), ios::beg);
+                info.write(reinterpret_cast<char*>(&record), sizeof(record));
+            }
+
+            cout << endl << "Your email address has now been updated!" << endl;
+            // Close the file
+            info.close();
+            line();
+
+            break;
+        }
+        case 3: // Physical Address
+        {
+            system("cls"); //Clears console screen
+            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            line();
+
+            cout << endl << "UPDATE STREET ADDRESS" << endl;
+            cout << "--------------------------------" << endl << endl;
+
+            info.open("Donor.dat", ios::in | ios::out | ios::binary);
+
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << "Enter your Record Number: ";
+                cin >> recordNumber;
+                cin.ignore();
+
+                info.seekg(recordNumber * sizeof(record), ios::beg);
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << "----------------------------------" << endl;
+
+                //Get new data from user and edit in-memory record
+                cout << endl << "Enter the new data: " << endl << endl;
+
+
+                cout << "  Street Address: ";
+                cin.getline(record.address_line1, SIZE);
+                cout << "  Suburb/City: ";
+                cin.getline(record.address_line2, SIZE);
+
+                // Move to the right place in file and write the record
+                info.seekp(recordNumber * sizeof(record), ios::beg);
+                info.write(reinterpret_cast<char*>(&record), sizeof(record));
+            }
+
+            cout << endl << "Your address has now been updated!" << endl;
+
+            // Close the file
+            info.close();
+            line();
+            break;
+        }
+        case 4: // Health Conditions
+        {
+            system("cls"); //Clears console screen
+            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            line();
+
+            cout << endl << "UPDATE HEALTH CONDITIONS" << endl;
+            cout << "--------------------------------" << endl << endl;
+
+            info.open("Donor.dat", ios::in | ios::out | ios::binary);
+
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << "Enter your Record Number: ";
+                cin >> recordNumber;
+                cin.ignore();
+
+                info.seekg(recordNumber * sizeof(record), ios::beg);
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << "----------------------------------" << endl;
+
+                //Get new data from user and edit in-memory record
+                cout << endl << "Enter the new data: " << endl << endl;
+
+                cout << "  Health Conditions: ";
+                cin.getline(record.health_conditions, SIZE);
+
+                // Move to the right place in file and write the record
+                info.seekp(recordNumber * sizeof(record), ios::beg);
+                info.write(reinterpret_cast<char*>(&record), sizeof(record));
+            }
+
+            cout << endl << "Your health conditions have now been updated!" << endl << endl;
+            // Close the file
+            info.close();
+            line();
+            break;
+        }
+        case 5: // Donation Appointment
+        {
+            system("cls");
+            break;
+        }
+        case 6: // Display Main Menu
+        {
+            system("cls");
+            donor_menu();
+            break;
+        }
+        default:
+        {
+            cout << "Invalid selection. Please try again." << endl;
+            line();
+            break;
+        }
+        }
+    } while (option < 7);
+
 }
 
 //Function to obtain New Recipient Registration Info  ***COMPLETED***
@@ -671,7 +1140,7 @@ void recipient_registration()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << "    RECIPIENT REGISTRATION" << endl;
@@ -734,7 +1203,7 @@ void recipient_login()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << "  \tRECIPIENT LOGIN" << endl;
@@ -745,11 +1214,12 @@ void recipient_login()
 
     if (!info)
     {
-        cout << "Error in opening the file... ";
+        cout << "Error in opening the file... " << endl;
+        line();
     }
     else
     {
-        while (attempt < 3)
+        for (attempt = 0; attempt < 3; attempt++)
         {
             //User Input
             cout << "Enter Username: ";
@@ -757,41 +1227,50 @@ void recipient_login()
             cout << "Enter Password: ";
             cin.getline(pass, SIZE);
 
-
-            // Read & search for matching data
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-            while (!info.eof())
+            if (search_recipient_file(name, pass))
             {
-                if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
-                {
-                    system("cls"); //Clears console screen
-                    cout << "\t\t\t\t\t\t\t\t\tWelcome back " << record.name << "!";
-                    flag = true;
-                }
-                info.read(reinterpret_cast<char*>(&record), sizeof(record));
-            }
-
-            // Show if no matching details found
-            if (flag == true)
-            {
+                system("cls");
+                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!";
                 recipient_menu();
+                flag = true;
+                break;
             }
-            else if (flag == false)
+            if (flag == false)
             {
-                cout << endl << "Incorrect Username or Password. Please try again." << endl;
-                line();
-                attempt++;
+                cout << endl << "Incorrect Username or Password. Please try again." << endl << endl;
             }
-            while (attempt > 2)
-            {
-                cout << "Limit reached. Program Exited..." << endl << endl;
-                exit(0);
-            }
+        }
+        if (attempt > 2)
+        {
+            cout << endl << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
         }
     }
     //Close File
     info.close();
+}
+
+//Function to check login against recipient data file ***COMPLETED***
+bool search_recipient_file(char name[], char pass[])
+{
+    bool flag = false;
+    fstream info;
+    Recipient_Details record;
+    info.open("Recipient.dat", ios::in | ios::binary);
+
+    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    while (!info.eof())
+    {
+        if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
+        {
+            flag = true;
+            break;
+        }
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+
+    info.close();
+    return flag;
 }
 
 //Function to display Recipient Menu  ***COMPLETED***
@@ -800,7 +1279,7 @@ void recipient_menu()
     int option;
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     while (1)
@@ -809,10 +1288,10 @@ void recipient_menu()
         cout << endl << "  \tRECIPIENT MENU" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " Access Donor Information via: " << endl;
-        cout << " 1. Full Name" << endl;
-        cout << " 2. Blood Group" << endl;
-        cout << " 3. Location" << endl;
-        cout << " 4. Exit..." << endl;
+        cout << "  1. Full Name" << endl;
+        cout << "  2. Blood Group" << endl;
+        cout << "  3. Location" << endl;
+        cout << "  4. Exit..." << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -865,7 +1344,7 @@ void full_name()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     // Open the file for reading
@@ -888,7 +1367,7 @@ void full_name()
         cin.getline(lastName, SIZE);
 
         cout << endl << "Retrieving matching records..." << endl << endl;
-        cout << endl << " ----------------------------------";
+        cout << endl << " ----------------------------------" << endl;
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -897,22 +1376,22 @@ void full_name()
         {
             if ((strcmp(firstName, record.first_name) == 0) && (strcmp(lastName, record.last_name) == 0))
             {
-                cout << endl << "  Record Number:         " << record.record_number;
-                cout << endl << "  First Name:            " << record.first_name;
-                cout << endl << "  Last Name:             " << record.last_name;
-                cout << endl << "  Date of Birth:         " << record.date_of_birth;
-                cout << endl << "  Gender:                " << record.gender;
-                cout << endl << "  Nationality:           " << record.nationality;
-                cout << endl << "  Ethnicity:             " << record.ethnicity;
-                cout << endl << "  Health Conditions:     " << record.health_conditions;
-                cout << endl << "  Blood Group:           " << record.blood_group;
-                cout << endl << "  Contact Number:        " << record.contact_number;
-                cout << endl << "  Email Address:         " << record.email_address;
-                cout << endl << "  Street Address:        " << record.address_line1;
-                cout << endl << "  Suburb/City:           " << record.address_line2;
-                cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << " ----------------------------------" << endl;
+                cout << endl << " Record Number:         " << record.record_number;
+                cout << endl << " First Name:            " << record.first_name;
+                cout << endl << " Last Name:             " << record.last_name;
+                cout << endl << " Date of Birth:         " << record.date_of_birth;
+                cout << endl << " Gender:                " << record.gender;
+                cout << endl << " Nationality:           " << record.nationality;
+                cout << endl << " Ethnicity:             " << record.ethnicity;
+                cout << endl << " Health Conditions:     " << record.health_conditions;
+                cout << endl << " Blood Group:           " << record.blood_group;
+                cout << endl << " Contact Number:        " << record.contact_number;
+                cout << endl << " Email Address:         " << record.email_address;
+                cout << endl << " Street Address:        " << record.address_line1;
+                cout << endl << " Suburb/City:           " << record.address_line2;
+                cout << endl << " Date of Last Donation: " << record.last_donation;
+                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -947,7 +1426,7 @@ void blood_group()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     // Open the file for reading
@@ -967,7 +1446,7 @@ void blood_group()
         cin.getline(bloodGroup, 14);
 
         cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------";
+        cout << endl << " ----------------------------------" << endl;
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -976,22 +1455,22 @@ void blood_group()
         {
             if (strcmp(bloodGroup, record.blood_group) == 0)
             {
-                cout << endl << "  Record Number:         " << record.record_number;
-                cout << endl << "  First Name:            " << record.first_name;
-                cout << endl << "  Last Name:             " << record.last_name;
-                cout << endl << "  Date of Birth:         " << record.date_of_birth;
-                cout << endl << "  Gender:                " << record.gender;
-                cout << endl << "  Nationality:           " << record.nationality;
-                cout << endl << "  Ethnicity:             " << record.ethnicity;
-                cout << endl << "  Health Conditions:     " << record.health_conditions;
-                cout << endl << "  Blood Group:           " << record.blood_group;
-                cout << endl << "  Contact Number:        " << record.contact_number;
-                cout << endl << "  Email Address:         " << record.email_address;
-                cout << endl << "  Street Address:        " << record.address_line1;
-                cout << endl << "  Suburb/City:           " << record.address_line2;
-                cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << " ----------------------------------" << endl;
+                cout << endl << " Record Number:         " << record.record_number;
+                cout << endl << " First Name:            " << record.first_name;
+                cout << endl << " Last Name:             " << record.last_name;
+                cout << endl << " Date of Birth:         " << record.date_of_birth;
+                cout << endl << " Gender:                " << record.gender;
+                cout << endl << " Nationality:           " << record.nationality;
+                cout << endl << " Ethnicity:             " << record.ethnicity;
+                cout << endl << " Health Conditions:     " << record.health_conditions;
+                cout << endl << " Blood Group:           " << record.blood_group;
+                cout << endl << " Contact Number:        " << record.contact_number;
+                cout << endl << " Email Address:         " << record.email_address;
+                cout << endl << " Street Address:        " << record.address_line1;
+                cout << endl << " Suburb/City:           " << record.address_line2;
+                cout << endl << " Date of Last Donation: " << record.last_donation;
+                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << " ----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1027,7 +1506,7 @@ void location()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     // Open the file for reading
@@ -1047,7 +1526,7 @@ void location()
         cin.getline(location, 14);
 
         cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------";
+        cout << endl << " ----------------------------------" << endl;
 
         // Read & search for matching data
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1056,22 +1535,22 @@ void location()
         {
             if (strcmp(location, record.clinic_location) == 0)
             {
-                cout << endl << "  Record Number:         " << record.record_number;
-                cout << endl << "  First Name:            " << record.first_name;
-                cout << endl << "  Last Name:             " << record.last_name;
-                cout << endl << "  Date of Birth:         " << record.date_of_birth;
-                cout << endl << "  Gender:                " << record.gender;
-                cout << endl << "  Nationality:           " << record.nationality;
-                cout << endl << "  Ethnicity:             " << record.ethnicity;
-                cout << endl << "  Health Conditions:     " << record.health_conditions;
-                cout << endl << "  Blood Group:           " << record.blood_group;
-                cout << endl << "  Contact Number:        " << record.contact_number;
-                cout << endl << "  Email Address:         " << record.email_address;
-                cout << endl << "  Street Address:        " << record.address_line1;
-                cout << endl << "  Suburb/City:           " << record.address_line2;
-                cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << " --------------------------------- " << endl;
+                cout << endl << " Record Number:         " << record.record_number;
+                cout << endl << " First Name:            " << record.first_name;
+                cout << endl << " Last Name:             " << record.last_name;
+                cout << endl << " Date of Birth:         " << record.date_of_birth;
+                cout << endl << " Gender:                " << record.gender;
+                cout << endl << " Nationality:           " << record.nationality;
+                cout << endl << " Ethnicity:             " << record.ethnicity;
+                cout << endl << " Health Conditions:     " << record.health_conditions;
+                cout << endl << " Blood Group:           " << record.blood_group;
+                cout << endl << " Contact Number:        " << record.contact_number;
+                cout << endl << " Email Address:         " << record.email_address;
+                cout << endl << " Street Address:        " << record.address_line1;
+                cout << endl << " Suburb/City:           " << record.address_line2;
+                cout << endl << " Date of Last Donation: " << record.last_donation;
+                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << " --------------------------------- " << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
@@ -1108,7 +1587,7 @@ void admin_login()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << " \tADMIN LOGIN" << endl;
@@ -1150,7 +1629,7 @@ void admin_menu()
     int option;
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
@@ -1232,7 +1711,7 @@ void search_recipient()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     // Open the file for reading
@@ -1304,7 +1783,7 @@ void search_donor()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     // Open the file for reading
@@ -1375,10 +1854,66 @@ void search_donor()
     info.close();
 }
 
-//Function for Admin to update Donor's Blood Type ***NOT STARTED***
+//Function for Admin to update Donor's Blood Type ***COMPLETED***
 void update_blood()
 {
+    Donor_Details record;
+    fstream info;
+    long long int recordNumber;
 
+    system("cls"); //Clears console screen
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    line();
+
+    cout << endl << "  \tUPDATE INFORMATION" << endl;
+    cout << "--------------------------------" << endl << endl;
+
+    info.open("Donor.dat", ios::in | ios::out | ios::binary);
+
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        cout << "Enter your Record Number: ";
+        cin >> recordNumber;
+        cin.ignore();
+
+        info.seekg(recordNumber * sizeof(record), ios::beg);
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+        cout << endl << "  Record Number:         " << record.record_number;
+        cout << endl << "  First Name:            " << record.first_name;
+        cout << endl << "  Last Name:             " << record.last_name;
+        cout << endl << "  Date of Birth:         " << record.date_of_birth;
+        cout << endl << "  Gender:                " << record.gender;
+        cout << endl << "  Nationality:           " << record.nationality;
+        cout << endl << "  Ethnicity:             " << record.ethnicity;
+        cout << endl << "  Health Conditions:     " << record.health_conditions;
+        cout << endl << "  Blood Group:           " << record.blood_group;
+        cout << endl << "  Contact Number:        " << record.contact_number;
+        cout << endl << "  Email Address:         " << record.email_address;
+        cout << endl << "  Street Address:        " << record.address_line1;
+        cout << endl << "  Suburb/City:           " << record.address_line2;
+        cout << endl << "  Date of Last Donation: " << record.last_donation;
+        cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+        cout << "----------------------------------" << endl;
+
+        //Get new data from user and edit in-memory record
+        cout << endl << "Enter the new data: " << endl << endl;
+
+        cout << "  Blood Group: ";
+        cin.getline(record.blood_group, SIZE);
+
+        // Move to the right place in file and write the record
+        info.seekp(recordNumber * sizeof(record), ios::beg);
+        info.write(reinterpret_cast<char*>(&record), sizeof(record));
+    }
+    // Close the file
+    info.close();
+    line();
 }
 
 //Function for Admin to view complete Donor Report ***COMPLETED***
@@ -1390,7 +1925,7 @@ void donor_report()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << "  \tDONOR LIST" << endl;
@@ -1445,47 +1980,162 @@ void blood_report()
 {
     Donor_Details record;
     fstream info;
+    int option;
+    bool flag = false;
+    char bloodGroup[14];
 
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
-    cout << endl << "\tBLOOD GROUP REPORT" << endl;
-    cout << "--------------------------------" << endl;
-
-    // Open the file for reading
-    info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
+    do
     {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        cout << endl << " Record:" << "\tBlood Group:" << "\tFull Name:" << "\t\tContact Number:";
-        cout << endl << " *******" << "\t************" << "\t**********" << "\t\t***************" << endl;
+        cout << "\tBLOOD GROUP" << endl;
+        cout << "--------------------------------" << endl;
+        cout << endl << " 1. Search Blood Type";
+        cout << endl << " 2. View All Blood Types";
+        cout << endl << " 3. Back to Admin Menu";
 
-        // Display All Records
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        cout << endl << endl << " Enter your option: "; //User Option Input
+        cin >> option;
+        cin.ignore(); //Clears input buffer
 
-        while (!info.eof())
+        cout << endl << endl;
+
+        switch (option)
         {
-            cout << endl << " " << record.record_number << "\t\t" << record.blood_group << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number;
-            cout << endl << endl;
+        case 1:
+        {
+            system("cls"); //Clears console screen
 
-            //Read one structure at time & display
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+
+            // Open the file for reading
+            info.open("Donor.dat", ios::in | ios::binary);
+            //Error Message
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                //User Input
+                cout << endl << "Search by Blood Group" << endl << endl;
+
+                cout << " Enter Blood Type: ";
+                cin.getline(bloodGroup, 14);
+
+                cout << endl << "Retrieving matching records..." << endl;
+                cout << endl << " ----------------------------------" << endl;
+
+                // Read & search for matching data
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                while (!info.eof())
+                {
+                    if (strcmp(bloodGroup, record.blood_group) == 0)
+                    {
+                        cout << endl << " Record Number:         " << record.record_number;
+                        cout << endl << " First Name:            " << record.first_name;
+                        cout << endl << " Last Name:             " << record.last_name;
+                        cout << endl << " Date of Birth:         " << record.date_of_birth;
+                        cout << endl << " Gender:                " << record.gender;
+                        cout << endl << " Nationality:           " << record.nationality;
+                        cout << endl << " Ethnicity:             " << record.ethnicity;
+                        cout << endl << " Health Conditions:     " << record.health_conditions;
+                        cout << endl << " Blood Group:           " << record.blood_group;
+                        cout << endl << " Contact Number:        " << record.contact_number;
+                        cout << endl << " Email Address:         " << record.email_address;
+                        cout << endl << " Street Address:        " << record.address_line1;
+                        cout << endl << " Suburb/City:           " << record.address_line2;
+                        cout << endl << " Date of Last Donation: " << record.last_donation;
+                        cout << endl << " Clinic Location:       " << record.clinic_location << endl;
+                        cout << endl << " ----------------------------------" << endl;
+                        flag = true;
+                    }
+                    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+                }
+
+                if (flag == true)
+                {
+                    //Displayed message to confirm all relevent data has been shown
+                    cout << endl << "That's all the information in the file matching the Blood Type provided." << endl;
+                    line();
+                }
+                else
+                {
+                    //Displayed message when searched name is not in file
+                    cout << endl << bloodGroup << " cannot be found in our records. Please try again." << endl;
+                    line();
+                }
+            }
+            info.close();
+            break;
         }
-    }
-    //Close File
-    info.close();
+        case 2:
+        {
+            system("cls"); //Clears console screen
 
-    cout << endl << "All records on file retrieved..." << endl;
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
 
-    line();
+            cout << "\tBLOOD GROUP REPORT" << endl;
+            cout << "--------------------------------" << endl;
+
+            // Open the file for reading
+            info.open("Donor.dat", ios::in | ios::binary);
+            //Error Message
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tBlood Group:";
+                cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t************" << endl;
+
+                // Display All Records
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                while (!info.eof())
+                {
+                    cout << endl << " " << record.record_number << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number << "\t\t" << record.blood_group;
+                    cout << endl << endl;
+
+                    //Read one structure at time & display
+                    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+                }
+            }
+            //Close File
+            info.close();
+
+            cout << endl << "All records on file retrieved..." << endl;
+
+            line();
+            break;
+        }
+        case 3:
+        {
+            system("cls");
+            // Re-Displaying header as it won't appear breaking out of this menu otherwise
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            break;
+        }
+        default:
+        {
+            cout << "Invalid selection. Please try again." << endl;
+            line();
+        }
+        }
+    } while (option < 3);
 }
 
 //Function for Admin to search and view Location Report ***COMPLETED***
@@ -1493,47 +2143,163 @@ void location_report()
 {
     Donor_Details record;
     fstream info;
+    int option;
+    bool flag = false;
+    char location[SIZE];
 
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
-    cout << endl << "\tLOCATION REPORT" << endl;
-    cout << "--------------------------------" << endl;
-
-    // Open the file for reading
-    info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
+    do
     {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        cout << endl << " Record:" << "\tLocation:" << "\t\tFull Name:" << "\t\tContact Number:";
-        cout << endl << " *******" << "\t*********" << "\t\t**********" << "\t\t***************" << endl;
+        cout << "\tLOCATION" << endl;
+        cout << "--------------------------------" << endl;
+        cout << endl << " 1. Search Location";
+        cout << endl << " 2. View All Locations";
+        cout << endl << " 3. Back to Admin Menu";
 
-        // Display All Records
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        cout << endl << endl << " Enter your option: "; //User Option Input
+        cin >> option;
+        cin.ignore(); //Clears input buffer
 
-        while (!info.eof())
+        cout << endl << endl;
+
+        switch (option)
         {
-            cout << endl << " " << record.record_number << "\t\t" << record.clinic_location << "\t\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number;
-            cout << endl << endl;
+        case 1:
+        {
+            system("cls"); //Clears console screen
 
-            //Read one structure at time & display
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+
+            // Open the file for reading
+            info.open("Donor.dat", ios::in | ios::binary);
+            //Error Message
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                //User Input
+                cout << endl << "Search by Location" << endl << endl;
+
+                cout << " Enter Clinic Location: ";
+                cin.getline(location, 14);
+
+                cout << endl << "Retrieving matching records..." << endl;
+                cout << endl << " ----------------------------------" << endl;
+
+                // Read & search for matching data
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                while (!info.eof())
+                {
+                    if (strcmp(location, record.clinic_location) == 0)
+                    {
+                        cout << endl << " Record Number:         " << record.record_number;
+                        cout << endl << " First Name:            " << record.first_name;
+                        cout << endl << " Last Name:             " << record.last_name;
+                        cout << endl << " Date of Birth:         " << record.date_of_birth;
+                        cout << endl << " Gender:                " << record.gender;
+                        cout << endl << " Nationality:           " << record.nationality;
+                        cout << endl << " Ethnicity:             " << record.ethnicity;
+                        cout << endl << " Health Conditions:     " << record.health_conditions;
+                        cout << endl << " Blood Group:           " << record.blood_group;
+                        cout << endl << " Contact Number:        " << record.contact_number;
+                        cout << endl << " Email Address:         " << record.email_address;
+                        cout << endl << " Street Address:        " << record.address_line1;
+                        cout << endl << " Suburb/City:           " << record.address_line2;
+                        cout << endl << " Date of Last Donation: " << record.last_donation;
+                        cout << endl << " Clinic Location:       " << record.clinic_location << endl;
+                        cout << endl << " --------------------------------- " << endl;
+                        flag = true;
+                    }
+                    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+                }
+
+                if (flag == true)
+                {
+                    //Displayed message to confirm all relevent data has been shown
+                    cout << endl << "That's all the information in the file matching the location provided." << endl;
+                    line();
+                }
+                else
+                {
+                    //Displayed message when searched name is not in file
+                    cout << endl << location << " cannot be found in our records. Please try again." << endl;
+                    line();
+                }
+            }
+            //Close File
+            info.close();
+            break;
         }
-    }
-    //Close File
-    info.close();
+        case 2:
+        {
+            system("cls"); //Clears console screen
 
-    cout << endl << "All records on file retrieved..." << endl;
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
 
-    line();
+            cout << endl << "\tLOCATION REPORT" << endl;
+            cout << "--------------------------------" << endl;
+
+            // Open the file for reading
+            info.open("Donor.dat", ios::in | ios::binary);
+            //Error Message
+            if (!info)
+            {
+                cout << "Error in opening the file... " << endl;
+                line();
+            }
+            else
+            {
+                cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tLocation:";
+                cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t*********" << endl;
+
+                // Display All Records
+                info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
+                while (!info.eof())
+                {
+                    cout << endl << " " << record.record_number << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number << "\t\t" << record.clinic_location;
+                    cout << endl << endl;
+
+                    //Read one structure at time & display
+                    info.read(reinterpret_cast<char*>(&record), sizeof(record));
+                }
+            }
+            //Close File
+            info.close();
+
+            cout << endl << "All records on file retrieved..." << endl;
+
+            line();
+            break;
+        }
+        case 3:
+        {
+            system("cls");
+            // Re-Displaying header as it won't appear breaking out of this menu otherwise
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            break;
+        }
+        default:
+        {
+            cout << "Invalid selection. Please try again." << endl;
+            line();
+        }
+        }
+    } while (option < 3);
 }
 
 //Function for Admin to view complete Recipient Report ***COMPLETED***
@@ -1545,7 +2311,7 @@ void recipient_report()
     system("cls"); //Clears console screen
 
     border_line();
-    cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     cout << endl << "  \tRECIPIENT LIST" << endl;
