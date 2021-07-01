@@ -1,8 +1,9 @@
 // NZ Blood Bank - Aotearoa Blood
 // Program allows users register as a donor or recipient & access a range of functions
 // Also allows admin to view & update information
+// Check ReadMe.txt for default Login Details
 
-//C++ Libraries 
+// C++ Libraries 
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -11,10 +12,11 @@
 
 using namespace std;
 
+// Global constant for chars
 const int SIZE = 31;
 
-//Structure containing information required to register a new donor
-struct Donor_Details //Includes Registration Details
+// Structure containing information required to register a new donor
+struct Donor_Details
 {
     char record_number;
     char first_name[SIZE];
@@ -31,22 +33,35 @@ struct Donor_Details //Includes Registration Details
     char address_line2[SIZE];
     char last_donation[14];
     char clinic_location[SIZE];
-    char booking_day[14];
-    char booking_time[14];
 
     char username[SIZE];
     char password[SIZE];
 };
 
-// Structure for Booking Days
-struct weekDays
+// Structure to hold donor booking days and times
+struct Weekdays
 {
     int week;
-    char monday1[25], monday2[25], monday3[25], monday4[25], monday5[25], monday6[25], monday7[25];
-    char tuesday1[25], tuesday2[25], tuesday3[25], tuesday4[25], tuesday5[25], tuesday6[25], tuesday7[25];
-    char wednesday1[25], wednesday2[25], wednesday3[25], wednesday4[25], wednesday5[25], wednesday6[25], wednesday7[25];
-    char thursday1[25], thursday2[25], thursday3[25], thursday4[25], thursday5[25], thursday6[25], thursday7[25];
-    char friday1[25], friday2[25], friday3[25], friday4[25], friday5[25], friday6[25], friday7[25];
+    char monday1[25], monday2[25], monday3[25], monday4[25], monday5[25], monday6[25], monday7[25], monday8[25];
+    char tuesday1[25], tuesday2[25], tuesday3[25], tuesday4[25], tuesday5[25], tuesday6[25], tuesday7[25], tuesday8[25];
+    char wednesday1[25], wednesday2[25], wednesday3[25], wednesday4[25], wednesday5[25], wednesday6[25], wednesday7[25], wednesday8[25];
+    char thursday1[25], thursday2[25], thursday3[25], thursday4[25], thursday5[25], thursday6[25], thursday7[25], thursday8[25];
+    char friday1[25], friday2[25], friday3[25], friday4[25], friday5[25], friday6[25], friday7[25], friday8[25];
+};
+
+// Global array to hold default/available timeslots for donor booking
+Weekdays week = { 0, " 9:00", "10:00", "11:00", "12:00", " 1:00", " 2:00", " 3:00", " 4:00", // Monday
+                     " 9:00", "10:00", "11:00", "12:00", " 1:00", " 2:00", " 3:00", " 4:00", // Tuesday
+                     " 9:00", "10:00", "11:00", "12:00", " 1:00", " 2:00", " 3:00", " 4:00", // Wednesday
+                     " 9:00", "10:00", "11:00", "12:00", " 1:00", " 2:00", " 3:00", " 4:00", // Thursday
+                     " 9:00", "10:00", "11:00", "12:00", " 1:00", " 2:00", " 3:00", " 4:00" }; // Friday
+
+// Structure to hold donor booking details
+struct Bookings
+{
+    char record_number;
+    char booking_day[14];
+    char booking_time[14];
 };
 
 //Structure containing information required to register a new recipient
@@ -63,7 +78,6 @@ struct Recipient_Details
     char password[SIZE];
 };
 
-
 // Main Menu Functions
 void main_menu();
 
@@ -72,7 +86,9 @@ void donor_registration();
 void donor_login();
 bool search_donor_file(char name[], char pass[]);
 void donor_menu();
+void check_existing();
 void book_donation();
+void reschedule_appointment();
 void view_information();
 void update_information();
 
@@ -103,25 +119,31 @@ void border_line();
 // Main Function
 int main()
 {
+    // Display Title/Header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
-    cout << "  Welcome to Aotearoa Blood, where we make blood donation easy." << endl;
+    // Display Info Blurb
+    cout << endl << "  Welcome to Aotearoa Blood, where we make blood donation easy." << endl;
     cout << "  Use the menu below to navigate through our system." << endl;
     line();
+
+    // Call main menu function
     main_menu();
 
+    // Success code returned
     return 0;
 }
 
-//Function to Display Introduction & Menu  ***COMPLETED***
+// Function to display blood bank information, contact details, and user menu  ***COMPLETED***
 void main_menu()
 {
+    // Function variable
     int option;
 
     do
     {
+        // User menu options
         cout << endl << "  \tMAIN MENU" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " 1. Information & Contact Us" << endl;
@@ -132,61 +154,65 @@ void main_menu()
         cout << " 6. Admin" << endl;
         cout << " 7. Exit..." << endl;
 
-        cout << endl << " Enter your option: "; //User Option Input
+        cout << endl << " Enter your option: "; // User input
         cin >> option;
         cin.ignore(); //Clears input buffer
-        //cout << endl;
         switch (option)
         {
-
         case 1: // About & Contact Us
         {
             system("cls"); // clears screen
+            // Display title/header
             border_line();
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            cout << endl << "\tINFORMATION" << endl;
+            cout << "--------------------------------" << endl << endl;
             cout << "  Aotearoa Blood was founded in 1998 under the New Zealand Public Health and Disability Act 2000" << endl;
             cout << "  and is an appointed entity under section 63 of the Human Tissue Act 2008," << endl;
             cout << "  with primary responsibility for blood and controlled human substances in New Zealand." << endl;
-            cout << "  Prior to this, a variety of regional blood services operated out of hospitals." << endl << endl;
-
-            cout << endl << "  CONTACT US " << endl;
+            cout << "  Prior to this, a variety of regional blood services operated out of hospitals." << endl;
+            line();
+            // Contact details for the blood bank
+            cout << endl << "\tCONTACT US " << endl;
+            cout << "--------------------------------" << endl << endl;
             cout << "  Phone: 0800 000 000" << endl;
             cout << "  Email: aotearoa@blood.co.nz" << endl << endl;
             line();
             break;
         }
 
-        case 2: // Existing Donor
+        case 2: // Existing donor login function
         {
             donor_login();
             break;
         }
-        case 3: // New Donor
+        case 3: // New donor registration function
         {
             donor_registration();
             break;
         }
-        case 4: // Existing Recipient
+        case 4: // Existing recipient login function
         {
             recipient_login();
             break;
         }
-        case 5: // New Recipient
+        case 5: // New recipient registration function
         {
             recipient_registration();
             break;
         }
-        case 6: // Admin
+        case 6: // Admin login function
         {
             admin_login();
             break;
         }
-        case 7:
+        case 7: // Exit program
         {
-            cout << "Program Exited..." << endl << endl;
+            cout << endl << "Program Exited..." << endl << endl;
             exit(0);
         }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again.";
             break;
@@ -194,30 +220,29 @@ void main_menu()
 
         }
     } while (option < 8);
-}
+} // End of main_menu function
 
-//Function to obtain New Donor Registration info  ***COMPLETED***
+// Function to obtain new donor registration information  ***COMPLETED***
 void donor_registration()
 {
-    // Variables needed to write the file
+    // Structure and file variables
     fstream info;
     Donor_Details record;
 
-    system("cls"); //Clears console screen
-
+    system("cls"); // Clears console screen
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
+    // Display subtitle
     cout << "  \tDONOR REGISTRATION" << endl;
     cout << "--------------------------------" << endl << endl;
 
-    // Open file
+    // Open data file for writing
     info.open("Donor.dat", ios::out | ios::app | ios::binary);
-
+    // Error message for non-existent file
     if (!info)
     {
-        //Error message for non-existent file
         cout << "Error in opening the file... " << endl;
         line();
     }
@@ -229,22 +254,17 @@ void donor_registration()
         cin.ignore();
         cout << "  First Name: ";
         cin.getline(record.first_name, SIZE);
-
         cout << "  Last Name: ";
         cin.getline(record.last_name, SIZE);
-
         cout << "  Date of Birth: ";
         cin.getline(record.date_of_birth, 14);
-
         cout << "  Gender: ";
         cin.getline(record.gender, SIZE);
-
         cout << "  Nationality: ";
         cin.getline(record.nationality, SIZE);
-
         cout << "  Ethnicity: ";
         cin.getline(record.ethnicity, SIZE);
-
+        // List of example health conditions
         cout << endl << "  Health Conditions" << endl;
         cout << "  > Heart" << endl;
         cout << "  > ADHD" << endl;
@@ -254,28 +274,21 @@ void donor_registration()
         cout << "  > Asthma" << endl;
         cout << "  > Arthritis" << endl;
         cout << "  > etc..." << endl;
-
         cout << endl << "  Known Health Condition/s: ";
         cin.getline(record.health_conditions, SIZE);
-
         cout << endl << "  Blood Group (AB+, AB-, A+, A-, B+, B-, O+, O-): ";
         cin.getline(record.blood_group, SIZE);
-
         cout << "  Contact Number: ";
         cin.getline(record.contact_number, 14);
-
         cout << "  Email Address: ";
         cin.getline(record.email_address, SIZE);
-
         cout << "  Street Address: ";
         cin.getline(record.address_line1, SIZE);
-
         cout << "  Suburb/City: ";
         cin.getline(record.address_line2, SIZE);
-
         cout << "  Date of Last Donation (If applicable): ";
         cin.getline(record.last_donation, 14);
-
+        // List of clinic locations
         cout << endl << "  Available Clinic Locations" << endl;
         cout << "  > Whangarei" << endl;
         cout << "  > Auckland" << endl;
@@ -286,47 +299,47 @@ void donor_registration()
         cout << "  > Christchuch" << endl;
         cout << "  > Timaru" << endl;
         cout << "  > Dunedin" << endl;
-
         cout << endl << "  Clinic Location: ";
         cin.getline(record.clinic_location, SIZE);
 
-        // User chooses their udername & password for future use 
+        // User chooses their username & password for future use 
         cout << endl << endl << "  Username: ";
         cin.getline(record.username, SIZE);
-
         cout << "  Password: ";
         cin.getline(record.password, SIZE);
 
+        // Writing user's input to data file
         info.write(reinterpret_cast<char*>(&record), sizeof(record));
-        // Close the file
+        // Close data file
         info.close();
     }
+    // Display registration confirmation
     cout << endl << "Thank you for registering! Please select Option 2 in the Main Menu to Login." << endl;
     line();
-}
+} // End of donor_registration function
 
-//Existing Donor Login  ***COMPLETED***
+// Function for existing donor to login  ***COMPLETED***
 void donor_login()
 {
+    // Function and file variables
     fstream info;
-    Donor_Details record;
     bool flag = false;
     char name[SIZE];
     char pass[SIZE];
     int attempt = 0;
 
-    system("cls"); //Clears console screen
-
+    system("cls"); // Clears console screen
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
+    // Display subtitle
     cout << endl << "  \tDONOR LOGIN" << endl;
     cout << "--------------------------------" << endl << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
-
+    // Error message for non-existent file
     if (!info)
     {
         cout << "Error in opening the file... " << endl;
@@ -334,48 +347,54 @@ void donor_login()
     }
     else
     {
+        // Loop for 3 login attempts
         for (attempt = 0; attempt < 3; attempt++)
         {
-            //User Input
-            cout << "Enter Username: ";
+            // User Input
+            cout << " Enter Username: ";
             cin.getline(name, SIZE);
-            cout << "Enter Password: ";
+            cout << " Enter Password: ";
             cin.getline(pass, SIZE);
 
-            if (search_donor_file(name, pass))
+            // Call search donor function to read file for matching the entered details
+            if (search_donor_file(name, pass)) // Do following if check is correct
             {
-                system("cls");
-                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!";
-                donor_menu();
+                system("cls"); // Clears console screen
+                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!"; // Will wellcome and display entered username on next screen
+                donor_menu(); // Call donor menu function
                 flag = true;
                 break;
             }
-            if (flag == false)
+            if (flag == false) // Display message if incorrect details entered
             {
                 cout << endl << "Incorrect Username or Password. Please try again." << endl << endl;
             }
         }
-        if (attempt > 2)
+        if (attempt > 2) // Close program if incorrect details entered 3 times
         {
             cout << endl << "Limit reached. Program Exited..." << endl << endl;
             exit(0);
         }
     }
-    //Close File
+    //Close data file
     info.close();
-}
+} // End of donor_login function
 
-//Function to check login against donor data file ***COMPLETED***
+// Function to check login against donor data file ***COMPLETED***
 bool search_donor_file(char name[], char pass[])
 {
+    // Structure, function, and file variables
     bool flag = false;
     fstream info;
     Donor_Details record;
-    info.open("Donor.dat", ios::in | ios::binary);
 
+    // Open data file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
     info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
     while (!info.eof())
     {
+        // Check if entered username and password matches data file
         if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
         {
             flag = true;
@@ -384,22 +403,25 @@ bool search_donor_file(char name[], char pass[])
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
     }
 
+    // Close data file
     info.close();
+    // Return true/false flag to donor login function
     return flag;
-}
+} // End of search_donor_file function 
 
 //Function to display Donor Menu  ***COMPLETED***
 void donor_menu()
 {
+    // Function variable
     int option;
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
     {
-        //Donor Menu Display
+        // Display subtitle and donor menu
         cout << endl << "  \tDONOR MENU" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " 1. Procedure to Donate Blood" << endl;
@@ -418,37 +440,43 @@ void donor_menu()
         case 1: // Procedure to Donate Blood
         {
             system("cls"); //Clears console screen
+            // Display title/header
             border_line();
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-            cout << endl << " PROCEDURE TO DONATE BLOOD" << endl;
-            line();
-
+            // Display subtitle
+            cout << endl << "   PROCEDURE TO DONATE BLOOD" << endl;
+            cout << "--------------------------------" << endl << endl;
+            // Donation Steps
             cout << " 1) Check-in at reception with your ID & complete a provided questionnaire." << endl;
             cout << "    Once you have completed your questionnaire, you will have a confidential interview with a NZBS" << endl;
             cout << "    nurse or donor technician. They will also check your haemoglobin level using a finger prick test." << endl;
-            cout << "    This is a great opportunity for you to discuss the donation process and ask any questions you may have." << endl << endl;
+            cout << "    This is a great opportunity for you to discuss the donation process and ask any questions you" << endl;
+            cout << "    may have." << endl << endl;
             cout << " 2) Once the forms are completed, you will be seated and your arm will be cleaned at the" << endl;
             cout << "    venepuncture site (on the inside of the elbow) and a sterile, single-use needle will be inserted." << endl;
             cout << "    There may be a moment of discomfort as the needle goes in." << endl << endl;
             cout << " 3) A blood donation can take up to 60 minutes (includes registration, donation and recovery)." << endl;
             cout << "    The blood is collected in a sterile bag, and time on the bed can take about 5 to 10 minutes." << endl;
-            cout << "    A unit of blood (around 470 ml) will be collected. The needle is then removed and a bandage is applied." << endl << endl;
+            cout << "    A unit of blood (around 470 ml) will be collected. The needle is then removed and a bandage" << endl;
+            cout << "    is applied." << endl << endl;
             cout << " 4) After donating blood, you will be asked to rest on the chair for around 5 to 10 minutes. When " << endl;
             cout << "    you're ready, you will be invited to have refreshments in the recovery area. We like to keep an" << endl;
-            cout << "    eye on you for another 10-15 minutes to make sure that you feel OK before leaving." << endl << endl;
+            cout << "    eye on you for another 10-15 minutes to make sure that you feel OK before leaving." << endl;
             line();
             break;
         }
         case 2: // Benefits of Blood Donation
         {
             system("cls"); //Clears console screen
+            // Display title/header
             border_line();
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-            cout << endl << " BENEFITS OF BLOOD DONATION" << endl;
-            line();
-
+            // Display subtitle
+            cout << endl << "  BENEFITS OF BLOOD DONATION" << endl;
+            cout << "--------------------------------" << endl << endl;
+            // Donation Benefits
             cout << " - One blood donation can save up to 3 lives." << endl;
             cout << " - Join an extraordinary group of lifesavers." << endl;
             cout << " - Donating regularly ensures that a safe and plentiful supply " << endl;
@@ -458,23 +486,22 @@ void donor_menu()
             line();
             break;
         }
-        case 3: // Book Donation Appointment
+        case 3: // Book donation appointment function
         {
             book_donation();
-            line();
             break;
         }
-        case 4: // Manage/Update Information
+        case 4: // Manage and update personal information function
         {
             view_information();
             break;
         }
-        case 5:
+        case 5:  // Exit program
         {
             cout << "Exited Program..." << endl;
             exit(0);
         }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
@@ -482,281 +509,357 @@ void donor_menu()
         }
         }
     } while (option < 6);
-}
+} // End of donor_menu function
 
-//Function for donors to book donation  ***IN PROGRESS***
+// Function to check existing time slots data file ***COMPLETED***
+void check_existing()
+{
+    // File variable
+    fstream slots;
+
+    // User input & writing/reading in data file
+    slots.open("TimeSlots.dat", ios::in | ios::binary);
+    // If file is empty, the WeekDay array will be copied in
+    if (slots)
+    {
+        slots.read(reinterpret_cast<char*>(&week), sizeof(week));
+        while (!slots.eof())
+        {
+            slots.read(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+    }
+    // Close data file
+    slots.close();
+} // End of check_existing function 
+
+//Function for donors to book donation  ***COMPLETED***
 void book_donation()
 {
-    Donor_Details record;
+    // Structure and file variables
     fstream info;
-    long long int recordNumber;
-
-    weekDays weekday = { 0, "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Monday
-        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Tuesday
-        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Wednesday
-        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm", // Thursday
-        "9:00 am", "10:00am", "11:00am", "12:00pm", "2:00pm", "3:00pm", "4:00pm" }; // Friday
-
+    fstream timeSlot;
+    Bookings booking;
+    // Clears input buffer
     system("cls");
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
-
+    // Display donation blurb
     cout << endl << " Thank you for considering donating, your kindness helps others." << endl;
-    cout << " Below are our current time slots avaliable. We are open on week days, 9:00am till 4:00pm." << endl;
+    cout << " Below are our current time slots avaliable. We are open Monday to Friday, 9:00am until 4:00pm." << endl;
     line();
+    // Display subtitle
+    cout << endl << "     BOOK BLOOD DONATION" << endl;
+    cout << "--------------------------------" << endl;
 
-    // Open file
-    info.open("Donor.dat", ios::out | ios::app | ios::binary);
+    // Call function to store array if time slot file not created
+    check_existing();
+
+    // Open time slot file and booking file for writing
+    timeSlot.open("TimeSlots.dat", ios::out | ios::app | ios::binary);
+    info.open("Booking.dat", ios::out | ios::app | ios::binary);
+    //Error message for non-existent file
     if (!info)
     {
-        //Error message for non-existent file
         cout << "Error in opening the file... " << endl;
         line();
     }
     else
     {
-        cout << endl << " Enter your Record Number: ";
-        cin >> recordNumber;
+        // User input
+        cout << endl << "Enter your Record Number: ";
+        cin >> booking.record_number;
         cin.ignore();
+        // Dipslay subtitle
+        cout << endl << " _______________________________________________________________________________________________ ";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t       TIME SLOTS AVAILABLE\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        // Display available time slots
+        border_line();
+        cout << "|    MONDAY   |  " << week.monday1 << "  |  " << week.monday2 << "  |  " << week.monday3 << "  |  " << week.monday4 << "  |  " << week.monday5 << "  |  " << week.monday6 << "  |  " << week.monday7 << "  |  " << week.monday8 << "   |";
+        border_line();
+        cout << "|   TUESDAY   |  " << week.tuesday1 << "  |  " << week.tuesday2 << "  |  " << week.tuesday3 << "  |  " << week.tuesday4 << "  |  " << week.tuesday5 << "  |  " << week.tuesday6 << "  |  " << week.tuesday7 << "  |  " << week.tuesday8 << "   |";
+        border_line();
+        cout << "|   WEDNESDAY |  " << week.wednesday1 << "  |  " << week.wednesday2 << "  |  " << week.wednesday3 << "  |  " << week.wednesday4 << "  |  " << week.wednesday5 << "  |  " << week.wednesday6 << "  |  " << week.wednesday7 << "  |  " << week.wednesday8 << "   |";
+        border_line();
+        cout << "|   THURSDAY  |  " << week.thursday1 << "  |  " << week.thursday2 << "  |  " << week.thursday3 << "  |  " << week.thursday4 << "  |  " << week.thursday5 << "  |  " << week.thursday6 << "  |  " << week.thursday7 << "  |  " << week.thursday8 << "   |";
+        border_line();
+        cout << "|    FRIDAY   |  " << week.friday1 << "  |  " << week.friday2 << "  |  " << week.friday3 << "  |  " << week.friday4 << "  |  " << week.friday5 << "  |  " << week.friday6 << "  |  " << week.friday7 << "  |  " << week.friday8 << "   |";
+        border_line();
+        // User inputs day
+        cout << endl << endl << " Enter the preferred day: ";
+        cin.getline(booking.booking_day, 14);
 
-        cout << endl << "  _____________________________________________________________________________________________ ";
-        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
-        cout << endl << " |" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << "|";
-        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
-
-        border_line();
-        cout << " |   MONDAY   |  " << weekday.monday1 << "  |  " << weekday.monday2 << "  |  " << weekday.monday3 << "  |  " << weekday.monday4 << "  |  " << weekday.monday5 << "  |  " << weekday.monday6 << "  |  " << weekday.monday7 << "  |";
-        border_line();
-        cout << " |  TUESDAY   |  " << weekday.tuesday1 << "  |  " << weekday.tuesday2 << "  |  " << weekday.tuesday3 << "  |  " << weekday.tuesday4 << "  |  " << weekday.tuesday5 << "  |  " << weekday.tuesday6 << "  |  " << weekday.tuesday7 << "  |";
-        border_line();
-        cout << " |  WEDNESDAY |  " << weekday.wednesday1 << "  |  " << weekday.wednesday2 << "  |  " << weekday.wednesday3 << "  |  " << weekday.wednesday4 << "  |  " << weekday.wednesday5 << "  |  " << weekday.wednesday6 << "  |  " << weekday.wednesday7 << "  |";
-        border_line();
-        cout << " |  THURSDAY  |  " << weekday.thursday1 << "  |  " << weekday.thursday2 << "  |  " << weekday.thursday3 << "  |  " << weekday.thursday4 << "  |  " << weekday.thursday5 << "  |  " << weekday.thursday6 << "  |  " << weekday.thursday7 << "  |";
-        border_line();
-        cout << " |   FRIDAY   |  " << weekday.friday1 << "  |  " << weekday.friday2 << "  |  " << weekday.friday3 << "  |  " << weekday.friday4 << "  |  " << weekday.friday5 << "  |  " << weekday.friday6 << "  |  " << weekday.friday7 << "  |";
-        border_line();
-
-        cout << endl << endl << " Enter the preferred day? ";
-        cin.getline(record.booking_day, 14);
-
-        cout << endl << " Enter the preferred time? ";
-        cin.getline(record.booking_time, 14);
-
-        // MONDAY -------------------------------------------
-        if (record.booking_day == "monday")
+        // Check if input day is valid
+        while (strcmp(booking.booking_day, "Monday") != 0 && strcmp(booking.booking_day, "monday") != 0 && strcmp(booking.booking_day, "Tuesday") != 0 && strcmp(booking.booking_day, "tuesday") != 0 && strcmp(booking.booking_day, "Wednesday") != 0 && strcmp(booking.booking_day, "wednesday") != 0
+            && strcmp(booking.booking_day, "Thursday") != 0 && strcmp(booking.booking_day, "thursday") != 0 && strcmp(booking.booking_day, "Friday") != 0 && strcmp(booking.booking_day, "friday") != 0)
         {
-            if (record.booking_time == "9:00am")
-            {
-                strcpy_s(weekday.monday1, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "10:00am")
-            {
-                strcpy_s(weekday.monday2, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "11:00am")
-            {
-                strcpy_s(weekday.monday3, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "12:00pm")
-            {
-                strcpy_s(weekday.monday4, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "2:00pm")
-            {
-                strcpy_s(weekday.monday5, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "3:00pm")
-            {
-                strcpy_s(weekday.monday6, ("\x1B[31m Booked\033[0m"));
-            }
-            else if (record.booking_time == "4:00pm")
-            {
-                strcpy_s(weekday.monday7, ("\x1B[31m Booked\033[0m"));
-            }
+            cout << endl << "Open Days are Monday - Friday. Please try again.";
+            cout << endl << endl << " Enter the preferred day: ";
+            cin.getline(booking.booking_day, 14);
+        }
+        // User inputs time
+        cout << " Enter the preferred time (i.e. 9:00 or 9): ";
+        cin.getline(booking.booking_time, 14);
+
+        // Check if input time is valid
+        while (strcmp(booking.booking_time, "9:00") != 0 && strcmp(booking.booking_time, "9") != 0 && strcmp(booking.booking_time, "10:00") != 0 && strcmp(booking.booking_time, "10") != 0 && strcmp(booking.booking_time, "11:00") != 0 && strcmp(booking.booking_time, "11") != 0 && strcmp(booking.booking_time, "12:00") != 0
+            && strcmp(booking.booking_time, "12") != 0 && strcmp(booking.booking_time, "1:00") != 0 && strcmp(booking.booking_time, "1") != 0 && strcmp(booking.booking_time, "2:00") != 0 && strcmp(booking.booking_time, "2") != 0 && strcmp(booking.booking_time, "3:00") != 0 && strcmp(booking.booking_time, "3") != 0 && strcmp(booking.booking_time, "4:00") != 0 && strcmp(booking.booking_time, "4") != 0)
+        {
+            cout << endl << "Booking Hours are 9:00am - 4:00pm. Please try again.";
+            cout << endl << endl << " Enter the preferred time (i.e. 9:00 or 9): ";
+            cin.getline(booking.booking_time, 14);
         }
 
-        // TUESDAY -------------------------------------------
-        if (record.booking_day == "tuesday")
+        // Monday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Monday") == 0 || strcmp(booking.booking_day, "monday") == 0)
         {
-            if (record.booking_time == "9:00am")
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(weekday.tuesday1, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday1, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "10:00am")
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
-                strcpy_s(weekday.tuesday2, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday2, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "11:00am")
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
             {
-                strcpy_s(weekday.tuesday3, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday3, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "12:00pm")
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
             {
-                strcpy_s(weekday.tuesday4, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday4, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "2:00pm")
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(weekday.tuesday5, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday5, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "3:00pm")
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(weekday.tuesday6, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday6, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "4:00pm")
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(weekday.tuesday7, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.monday7, ("\x1B[31mBooked\033[0m"));
             }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.monday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
 
-        // WEDNESDAY --------------------------------------
-        if (record.booking_day == "wednesday")
+        // Tuesday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Tuesday") == 0 || strcmp(booking.booking_day, "tuesday") == 0)
         {
-            if (record.booking_time == "9:00am")
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(weekday.wednesday1, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday1, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "10:00am")
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
-                strcpy_s(weekday.wednesday2, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday2, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "11:00am")
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
             {
-                strcpy_s(weekday.wednesday3, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday3, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "12:00pm")
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
             {
-                strcpy_s(weekday.wednesday4, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday4, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "2:00pm")
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(weekday.wednesday5, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday5, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "3:00pm")
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(weekday.wednesday6, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday6, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "4:00pm")
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(weekday.wednesday7, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.tuesday7, ("\x1B[31mBooked\033[0m"));
             }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.tuesday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
 
-        // THURSDAY -------------------------------------
-        if (record.booking_day == "thursday")
+        // Wednesday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Wednesday") == 0 || strcmp(booking.booking_day, "wednesday") == 0)
         {
-            if (record.booking_time == "9:00am")
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(weekday.thursday1, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday1, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "10:00am")
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
-                strcpy_s(weekday.thursday2, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday2, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "11:00am")
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
             {
-                strcpy_s(weekday.thursday3, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday3, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "12:00pm")
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
             {
-                strcpy_s(weekday.thursday4, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday4, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "2:00pm")
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(weekday.thursday5, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday5, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "3:00pm")
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(weekday.thursday6, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday6, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "4:00pm")
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(weekday.thursday7, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.wednesday7, ("\x1B[31mBooked\033[0m"));
             }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.wednesday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
 
-        // FRIDAY -----------------------------------------------
-        if (record.booking_day == "friday")
+        // Thursday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Thursday") == 0 || strcmp(booking.booking_day, "thursday") == 0)
         {
-            if (record.booking_time == "9:00am")
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(weekday.friday1, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday1, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "10:00am")
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
-                strcpy_s(weekday.friday2, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday2, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "11:00am")
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
             {
-                strcpy_s(weekday.friday3, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday3, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "12:00pm")
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
             {
-                strcpy_s(weekday.friday4, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday4, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "2:00pm")
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(weekday.friday5, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday5, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "3:00pm")
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(weekday.friday6, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday6, ("\x1B[31mBooked\033[0m"));
             }
-            else if (record.booking_time == "4:00pm")
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(weekday.friday7, ("\x1B[31m Booked\033[0m"));
+                strcpy_s(week.thursday7, ("\x1B[31mBooked\033[0m"));
             }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.thursday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
 
+        // Friday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Friday") == 0 || strcmp(booking.booking_day, "friday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.friday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.friday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.friday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.friday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.friday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.friday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.friday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.friday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Display booking confirmation 
         cout << endl << endl << " Your booking has been confirmed!";
-        cout << endl << " Your appointment to donate blood is on " << record.booking_day << " at " << record.booking_time;
-
-        /*cout << endl << "  _____________________________________________________________________________________________ ";
-        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
-        cout << endl << " |" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << "|";
-        cout << endl << " |" << "\t\t\t\t\t\t\t\t\t\t\t       " << "|";
-
-        border_line();
-        cout << " |   MONDAY   |  " << weekday.monday1 << "  |  " << weekday.monday2 << "  |  " << weekday.monday3 << "  |  " << weekday.monday4 << "  |  " << weekday.monday5 << "  |  " << weekday.monday6 << "  |  " << weekday.monday7 << "  |";
-        border_line();
-        cout << " |  TUESDAY   |  " << weekday.tuesday1 << "  |  " << weekday.tuesday2 << "  |  " << weekday.tuesday3 << "  |  " << weekday.tuesday4 << "  |  " << weekday.tuesday5 << "  |  " << weekday.tuesday6 << "  |  " << weekday.tuesday7 << "  |";
-        border_line();
-        cout << " |  WEDNESDAY |  " << weekday.wednesday1 << "  |  " << weekday.wednesday2 << "  |  " << weekday.wednesday3 << "  |  " << weekday.wednesday4 << "  |  " << weekday.wednesday5 << "  |  " << weekday.wednesday6 << "  |  " << weekday.wednesday7 << "  |";
-        border_line();
-        cout << " |  THURSDAY  |  " << weekday.thursday1 << "  |  " << weekday.thursday2 << "  |  " << weekday.thursday3 << "  |  " << weekday.thursday4 << "  |  " << weekday.thursday5 << "  |  " << weekday.thursday6 << "  |  " << weekday.thursday7 << "  |";
-        border_line();
-        cout << " |   FRIDAY   |  " << weekday.friday1 << "  |  " << weekday.friday2 << "  |  " << weekday.friday3 << "  |  " << weekday.friday4 << "  |  " << weekday.friday5 << "  |  " << weekday.friday6 << "  |  " << weekday.friday7 << "  |";
-        border_line();*/
+        cout << endl << " Your appointment to donate blood is on " << booking.booking_day << " at " << booking.booking_time << endl;
     }
 
-    // Move to the right place in file and write the record
-    info.write(reinterpret_cast<char*>(&record), sizeof(record));
-    // Close File
-    info.close();
-}
+    // Display subtitle
+    cout << endl << " _______________________________________________________________________________________________ ";
+    cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+    cout << endl << "|" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << " |";
+    cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+    // Display new available time slots
+    border_line();
+    cout << "|    MONDAY   |  " << week.monday1 << "  |  " << week.monday2 << "  |  " << week.monday3 << "  |  " << week.monday4 << "  |  " << week.monday5 << "  |  " << week.monday6 << "  |  " << week.monday7 << "  |  " << week.monday8 << "   |";
+    border_line();
+    cout << "|   TUESDAY   |  " << week.tuesday1 << "  |  " << week.tuesday2 << "  |  " << week.tuesday3 << "  |  " << week.tuesday4 << "  |  " << week.tuesday5 << "  |  " << week.tuesday6 << "  |  " << week.tuesday7 << "  |  " << week.tuesday8 << "   |";
+    border_line();
+    cout << "|   WEDNESDAY |  " << week.wednesday1 << "  |  " << week.wednesday2 << "  |  " << week.wednesday3 << "  |  " << week.wednesday4 << "  |  " << week.wednesday5 << "  |  " << week.wednesday6 << "  |  " << week.wednesday7 << "  |  " << week.wednesday8 << "   |";
+    border_line();
+    cout << "|   THURSDAY  |  " << week.thursday1 << "  |  " << week.thursday2 << "  |  " << week.thursday3 << "  |  " << week.thursday4 << "  |  " << week.thursday5 << "  |  " << week.thursday6 << "  |  " << week.thursday7 << "  |  " << week.thursday8 << "   |";
+    border_line();
+    cout << "|    FRIDAY   |  " << week.friday1 << "  |  " << week.friday2 << "  |  " << week.friday3 << "  |  " << week.friday4 << "  |  " << week.friday5 << "  |  " << week.friday6 << "  |  " << week.friday7 << "  |  " << week.friday8 << "   |";
+    border_line();
 
-//Function for donors to view their information  ***COMPLETED***
+
+    // Writing user's input to data files
+    timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+    info.write(reinterpret_cast<char*>(&booking), sizeof(booking));
+
+    // Close data files
+    info.close();
+    timeSlot.close();
+} // End of book_donation function
+
+// Function for donors to view their information  ***COMPLETED***
 void view_information()
 {
+    // Structure, function, and file variables
     Donor_Details record;
     fstream info;
     int option;
-    int recordNumber;
+    long long int recordNumber;
 
     system("cls"); //Clears console screen
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
     {
-        //Info Menu Display
+        // Display subtitle and information menu
         cout << endl << " \tMANAGE INFORMATION" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " 1. View Information" << endl;
         cout << " 2. Update Information" << endl;
-        cout << " 3. Back to Main Menu" << endl;
+        cout << " 3. Reschedule Appointment" << endl;
+        cout << " 4. Back to Main Menu" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -765,19 +868,20 @@ void view_information()
 
         switch (option)
         {
-        case 1: // Procedure to Donate Blood
+        case 1: // View current donor details
         {
             system("cls"); //Clears console screen
+            // Display title/header
             border_line();
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
+            // Display subtitle
             cout << endl << " \tVIEW INFORMATION" << endl;
             cout << "--------------------------------" << endl << endl;
 
-            // Open the file for reading
+            // Open the data file for reading
             info.open("Donor.dat", ios::in | ios::binary);
-            //Error Message
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -785,9 +889,10 @@ void view_information()
             }
             else
             {
+                // User input
                 cout << "Enter your Record Number: ";
                 cin >> recordNumber;
-
+                // Searching user's input in data file and displaying results
                 info.seekp(recordNumber * sizeof(record));
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -804,27 +909,33 @@ void view_information()
                 cout << endl << "  Street Address:        " << record.address_line1;
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
+
                 cout << "----------------------------------" << endl;
 
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
             }
-            //Close File
+            //Close data ile
             info.close();
             break;
         }
-        case 2: // Manage/Update Information
+        case 2: // Update donor's information function
         {
             update_information();
             break;
         }
-        case 3:
+        case 3: // Reschedule existing donation appointment function             
         {
-            system("cls");
-            donor_menu();
+            reschedule_appointment();
             break;
         }
-        default:
+        case 4:
+        {
+            system("cls"); // Clears console screen
+            donor_menu(); // Donor menu function
+            break;
+        }
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
@@ -832,32 +943,33 @@ void view_information()
         }
         }
     } while (option < 3);
-}
+} // End of view_information function
 
-//Function for donors to update their information  ***COMPLETED***
+// Function for donors to update their information  ***COMPLETED***
 void update_information()
 {
+    // Structure, function and file variables
     Donor_Details record;
     fstream info;
     int option;
     long long int recordNumber;
 
     system("cls"); //Clears console screen
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     do
     {
-        //  Update Info Menu 
-        cout << endl << " UPDATE INFORMATION" << endl;
+        //  Display subtitle and manage information menu 
+        cout << endl << "\tUPDATE INFORMATION" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " 1. Contact Number" << endl;
         cout << " 2. Email Address" << endl;
         cout << " 3. Physical Address" << endl;
         cout << " 4. Health Conditions" << endl;
-        cout << " 5. Donation Appointment" << endl;
-        cout << " 6. Back to Donor Menu" << endl;
+        cout << " 5. Back to Information Menu" << endl;
 
         cout << endl << " Enter the option you'd like to update: "; //User Option Input
         cin >> option;
@@ -866,18 +978,19 @@ void update_information()
 
         switch (option)
         {
-        case 1: // Contact Number
+        case 1: // Update contact number
         {
             system("cls"); //Clears console screen
+            // Display title/header
             border_line();
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
-            cout << endl << "UPDATE CONTACT NUMBER" << endl;
+            // Display subtitle
+            cout << endl << "     UPDATE CONTACT NUMBER" << endl;
             cout << "--------------------------------" << endl << endl;
-
+            // Open data file for writing
             info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -885,10 +998,11 @@ void update_information()
             }
             else
             {
+                // User input
                 cout << "Enter your Record Number: ";
                 cin >> recordNumber;
-                cin.ignore();
-
+                cin.ignore(); // Clears input buffer
+                // Searching user's input in data file and displaying results
                 info.seekg(recordNumber * sizeof(record), ios::beg);
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -906,12 +1020,11 @@ void update_information()
                 cout << endl << "  Street Address:        " << record.address_line1;
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
                 cout << "----------------------------------" << endl;
 
-                //Get new data from user and edit in-memory record
+                // Get new data from user and edit in-memory record
                 cout << endl << "Enter the new data: " << endl << endl;
-
                 cout << "  Contact Number: ";
                 cin.getline(record.contact_number, 14);
 
@@ -919,24 +1032,26 @@ void update_information()
                 info.seekp(recordNumber * sizeof(record), ios::beg);
                 info.write(reinterpret_cast<char*>(&record), sizeof(record));
             }
-
+            // Display confirmation of update
             cout << endl << "Your contact number has now been updated!" << endl;
-            // Close the file
+            // Close data file
             info.close();
             line();
             break;
         }
-        case 2: // Email Address
+        case 2: // Update email address
         {
             system("cls"); //Clears console screen
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-            line();
-
-            cout << endl << "UPDATE EMAIL ADDRESS" << endl;
+            // Display title/header
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            // Display subtitle
+            cout << endl << "     UPDATE EMAIL ADDRESS" << endl;
             cout << "--------------------------------" << endl << endl;
-
+            // Open data file for writing
             info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -944,10 +1059,11 @@ void update_information()
             }
             else
             {
+                // User input
                 cout << "Enter your Record Number: ";
                 cin >> recordNumber;
-                cin.ignore();
-
+                cin.ignore(); // Clears input buffer
+                // Searching user's input in data file and displaying results
                 info.seekg(recordNumber * sizeof(record), ios::beg);
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -965,10 +1081,10 @@ void update_information()
                 cout << endl << "  Street Address:        " << record.address_line1;
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
                 cout << "----------------------------------" << endl;
 
-                //Get new data from user and edit in-memory record
+                // Get new data from user and edit in-memory record
                 cout << endl << "Enter the new data: " << endl << endl;
 
                 cout << "  Email Address: ";
@@ -978,25 +1094,26 @@ void update_information()
                 info.seekp(recordNumber * sizeof(record), ios::beg);
                 info.write(reinterpret_cast<char*>(&record), sizeof(record));
             }
-
+            // Display confirmation of update
             cout << endl << "Your email address has now been updated!" << endl;
-            // Close the file
+            // Close data file
             info.close();
             line();
-
             break;
         }
-        case 3: // Physical Address
+        case 3: // Update physical address
         {
             system("cls"); //Clears console screen
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-            line();
-
-            cout << endl << "UPDATE STREET ADDRESS" << endl;
+            // Display title/header
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            // Display subtitle
+            cout << endl << "     UPDATE STREET ADDRESS" << endl;
             cout << "--------------------------------" << endl << endl;
-
+            // Open data file for writing
             info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -1004,10 +1121,11 @@ void update_information()
             }
             else
             {
+                // User input
                 cout << "Enter your Record Number: ";
                 cin >> recordNumber;
-                cin.ignore();
-
+                cin.ignore(); // Clears input buffer
+                // Searching user's input in data file and displaying results
                 info.seekg(recordNumber * sizeof(record), ios::beg);
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -1025,13 +1143,11 @@ void update_information()
                 cout << endl << "  Street Address:        " << record.address_line1;
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
                 cout << "----------------------------------" << endl;
 
                 //Get new data from user and edit in-memory record
                 cout << endl << "Enter the new data: " << endl << endl;
-
-
                 cout << "  Street Address: ";
                 cin.getline(record.address_line1, SIZE);
                 cout << "  Suburb/City: ";
@@ -1041,25 +1157,27 @@ void update_information()
                 info.seekp(recordNumber * sizeof(record), ios::beg);
                 info.write(reinterpret_cast<char*>(&record), sizeof(record));
             }
-
+            // Display confirmation of update
             cout << endl << "Your address has now been updated!" << endl;
 
-            // Close the file
+            // Close data file
             info.close();
             line();
             break;
         }
-        case 4: // Health Conditions
+        case 4: // Update health conditions
         {
             system("cls"); //Clears console screen
-            cout << endl << ("\x1B[35m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-            line();
-
-            cout << endl << "UPDATE HEALTH CONDITIONS" << endl;
+            // Display title/header
+            border_line();
+            cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+            border_line();
+            // Display subtitle
+            cout << endl << "    UPDATE HEALTH CONDITIONS" << endl;
             cout << "--------------------------------" << endl << endl;
-
+            // Open data file for writing
             info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -1067,10 +1185,11 @@ void update_information()
             }
             else
             {
+                // User input
                 cout << "Enter your Record Number: ";
                 cin >> recordNumber;
-                cin.ignore();
-
+                cin.ignore(); // Clears input buffer
+                // Searching user's input in data file and displaying results
                 info.seekg(recordNumber * sizeof(record), ios::beg);
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -1088,12 +1207,11 @@ void update_information()
                 cout << endl << "  Street Address:        " << record.address_line1;
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
-                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
                 cout << "----------------------------------" << endl;
 
                 //Get new data from user and edit in-memory record
                 cout << endl << "Enter the new data: " << endl << endl;
-
                 cout << "  Health Conditions: ";
                 cin.getline(record.health_conditions, SIZE);
 
@@ -1101,57 +1219,560 @@ void update_information()
                 info.seekp(recordNumber * sizeof(record), ios::beg);
                 info.write(reinterpret_cast<char*>(&record), sizeof(record));
             }
-
-            cout << endl << "Your health conditions have now been updated!" << endl << endl;
+            // Display confirmation of update
+            cout << endl << "Your health conditions have now been updated!" << endl;
             // Close the file
             info.close();
             line();
             break;
         }
-        case 5: // Donation Appointment
+        case 5: // Display main menu
         {
-            system("cls");
+            system("cls"); // Clears console screen
+            view_information(); // Information menu function
             break;
         }
-        case 6: // Display Main Menu
-        {
-            system("cls");
-            donor_menu();
-            break;
-        }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
             break;
         }
         }
-    } while (option < 7);
+    } while (option < 6);
+} // End of update_information function
 
-}
-
-//Function to obtain New Recipient Registration Info  ***COMPLETED***
-void recipient_registration()
+// Function to reschedule donor appointment  ***COMPLETED***
+void reschedule_appointment()
 {
-    // Variables needed to write the file
-    fstream info;
-    Recipient_Details record;
+    // Structure, function, and file variables
+    Bookings booking;
+    long long int recordNumber;
+    fstream timeSlot;
+    fstream reschedule;
 
     system("cls"); //Clears console screen
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
+    // Call function to store array if time slot file not created
+    check_existing();
+
+    // Open time slot file and booking file for writing
+    timeSlot.open("TimeSlots.dat", ios::out | ios::app | ios::binary);
+    reschedule.open("Booking.dat", ios::in | ios::out | ios::binary);
+    // Error message for non-existent file
+    if (!reschedule)
+    {
+        cout << "Error opening file.";
+    }
+    else
+    {
+        // Display subtitle
+        cout << endl << "    RESCHEDULE YOUR APPOINTMENT";
+        cout << endl << "----------------------------------" << endl << endl;
+        // User input
+        cout << "Enter your Record Number: ";
+        cin >> recordNumber;
+        cin.ignore(); // Clears input buffer
+
+        // Searching user's input in data file and displaying results
+        reschedule.seekg(recordNumber * sizeof(booking), ios::beg);
+        reschedule.read(reinterpret_cast<char*>(&booking), sizeof(booking));
+
+        //Display the record first
+        cout << endl << "Retrieving current appointment..." << endl;
+        cout << endl << " ----------------------------------" << endl;
+
+        cout << endl << "  Day of Appointment:   " << booking.booking_day;
+        cout << endl << "  Time of Appointment:  " << booking.booking_time << endl;
+        cout << endl << " ----------------------------------" << endl;
+
+        // Monday loop for "Booked" timeslot to change to relevent time
+        if (strcmp(booking.booking_day, "Monday") == 0 || strcmp(booking.booking_day, "monday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.monday1, "9:00");
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.monday2, "10:00");
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.monday3, "11:00");
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.monday4, "12:00");
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.monday5, "1:00");
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.monday6, "2:00");
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.monday7, "3:00");
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.monday8, "4:00");
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Tuesday loop for "Booked" timeslot to change to relevent time
+        if (strcmp(booking.booking_day, "Tuesday") == 0 || strcmp(booking.booking_day, "tuesday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.tuesday1, "9:00");
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.tuesday2, "10:00");
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.tuesday3, "11:00");
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.tuesday4, "12:00");
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.tuesday5, "1:00");
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.tuesday6, "2:00");
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.tuesday7, "3:00");
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.tuesday8, "4:00");
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Wednesday loop for "Booked" timeslot to change to relevent time
+        if (strcmp(booking.booking_day, "Wednesday") == 0 || strcmp(booking.booking_day, "wednesday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.wednesday1, "9:00");
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.wednesday2, "10:00");
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.wednesday3, "11:00");
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.wednesday4, "12:00");
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.wednesday5, "1:00");
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.wednesday6, "2:00");
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.wednesday7, "3:00");
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.wednesday8, "4:00");
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Thursday loop for "Booked" timeslot to change to relevent time
+        if (strcmp(booking.booking_day, "Thursday") == 0 || strcmp(booking.booking_day, "thursday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.thursday1, "9:00");
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.thursday2, "10:00");
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.thursday3, "11:00");
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.thursday4, "12:00");
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.thursday5, "1:00");
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.thursday6, "2:00");
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.thursday7, "3:00");
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.thursday8, "4:00");
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Friday loop for "Booked" timeslot to change to relevent time
+        if (strcmp(booking.booking_day, "Friday") == 0 || strcmp(booking.booking_day, "friday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.friday1, "9:00");
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.friday2, "10:00");
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.friday3, "11:00");
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.friday4, "12:00");
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.friday5, "1:00");
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.friday6, "2:00");
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.friday7, "3:00");
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.friday8, "4:00");
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Get new data from user and edit in-memory record
+        cout << endl << "Enter new booking details: " << endl << endl;
+        cout << " Re-enter your Record Number: ";
+        cin >> booking.record_number;
+        cin.ignore(); // Clears input buffer
+
+        // Dipslay subtitle
+        cout << endl << " _______________________________________________________________________________________________ ";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t       TIME SLOTS AVAILABLE\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        // Display available time slots
+        border_line();
+        cout << "|    MONDAY   |  " << week.monday1 << "  |  " << week.monday2 << "  |  " << week.monday3 << "  |  " << week.monday4 << "  |  " << week.monday5 << "  |  " << week.monday6 << "  |  " << week.monday7 << "  |  " << week.monday8 << "   |";
+        border_line();
+        cout << "|   TUESDAY   |  " << week.tuesday1 << "  |  " << week.tuesday2 << "  |  " << week.tuesday3 << "  |  " << week.tuesday4 << "  |  " << week.tuesday5 << "  |  " << week.tuesday6 << "  |  " << week.tuesday7 << "  |  " << week.tuesday8 << "   |";
+        border_line();
+        cout << "|   WEDNESDAY |  " << week.wednesday1 << "  |  " << week.wednesday2 << "  |  " << week.wednesday3 << "  |  " << week.wednesday4 << "  |  " << week.wednesday5 << "  |  " << week.wednesday6 << "  |  " << week.wednesday7 << "  |  " << week.wednesday8 << "   |";
+        border_line();
+        cout << "|   THURSDAY  |  " << week.thursday1 << "  |  " << week.thursday2 << "  |  " << week.thursday3 << "  |  " << week.thursday4 << "  |  " << week.thursday5 << "  |  " << week.thursday6 << "  |  " << week.thursday7 << "  |  " << week.thursday8 << "   |";
+        border_line();
+        cout << "|    FRIDAY   |  " << week.friday1 << "  |  " << week.friday2 << "  |  " << week.friday3 << "  |  " << week.friday4 << "  |  " << week.friday5 << "  |  " << week.friday6 << "  |  " << week.friday7 << "  |  " << week.friday8 << "   |";
+        border_line();
+        // User inputs day
+        cout << endl << endl << " Enter the preferred day: ";
+        cin.getline(booking.booking_day, 14);
+
+        // Check if input day is valid
+        while (strcmp(booking.booking_day, "Monday") != 0 && strcmp(booking.booking_day, "monday") != 0 && strcmp(booking.booking_day, "Tuesday") != 0 && strcmp(booking.booking_day, "tuesday") != 0 && strcmp(booking.booking_day, "Wednesday") != 0 && strcmp(booking.booking_day, "wednesday") != 0
+            && strcmp(booking.booking_day, "Thursday") != 0 && strcmp(booking.booking_day, "thursday") != 0 && strcmp(booking.booking_day, "Friday") != 0 && strcmp(booking.booking_day, "friday") != 0)
+        {
+            cout << endl << "Open Days are Monday - Friday. Please try again.";
+            cout << endl << endl << " Enter the preferred day: ";
+            cin.getline(booking.booking_day, 14);
+        }
+
+        // User inputs time
+        cout << " Enter the preferred time (i.e. 9:00 or 9): ";
+        cin.getline(booking.booking_time, 14);
+
+        // Check if input time is valid
+        while (strcmp(booking.booking_time, "9:00") != 0 && strcmp(booking.booking_time, "9") != 0 && strcmp(booking.booking_time, "10:00") != 0 && strcmp(booking.booking_time, "10") != 0 && strcmp(booking.booking_time, "11:00") != 0 && strcmp(booking.booking_time, "11") != 0 && strcmp(booking.booking_time, "12:00") != 0 && strcmp(booking.booking_time, "12") != 0
+            && strcmp(booking.booking_time, "1:00") != 0 && strcmp(booking.booking_time, "1") != 0 && strcmp(booking.booking_time, "2:00") != 0 && strcmp(booking.booking_time, "2") != 0 && strcmp(booking.booking_time, "3:00") != 0 && strcmp(booking.booking_time, "3") != 0 && strcmp(booking.booking_time, "4:00") != 0 && strcmp(booking.booking_time, "4") != 0)
+        {
+            cout << endl << "Booking Hours are 9:00am - 4:00pm. Please try again.";
+            cout << endl << endl << " Enter the preferred time (i.e. 9:00 or 9): ";
+            cin.getline(booking.booking_time, 14);
+        }
+
+
+        // Monday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Monday") == 0 || strcmp(booking.booking_day, "monday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.monday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.monday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.monday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.monday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.monday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.monday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.monday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.monday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Tuesday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Tuesday") == 0 || strcmp(booking.booking_day, "tuesday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.tuesday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.tuesday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.tuesday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.tuesday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.tuesday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.tuesday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.tuesday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.tuesday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Wednesday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Wednesday") == 0 || strcmp(booking.booking_day, "wednesday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.wednesday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.wednesday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.wednesday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.wednesday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.wednesday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.wednesday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.wednesday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.wednesday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Thursday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Thursday") == 0 || strcmp(booking.booking_day, "thursday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.thursday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.thursday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.thursday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.thursday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.thursday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.thursday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.thursday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.thursday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Friday loop for selected timeslot to change to "Booked"
+        if (strcmp(booking.booking_day, "Friday") == 0 || strcmp(booking.booking_day, "friday") == 0)
+        {
+            if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
+            {
+                strcpy_s(week.friday1, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
+            {
+                strcpy_s(week.friday2, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "11:00") == 0 || strcmp(booking.booking_time, "11") == 0)
+            {
+                strcpy_s(week.friday3, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "12:00") == 0 || strcmp(booking.booking_time, "12") == 0)
+            {
+                strcpy_s(week.friday4, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
+            {
+                strcpy_s(week.friday5, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
+            {
+                strcpy_s(week.friday6, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
+            {
+                strcpy_s(week.friday7, ("\x1B[31mBooked\033[0m"));
+            }
+            else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
+            {
+                strcpy_s(week.friday8, ("\x1B[31mBooked\033[0m"));
+            }
+            timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        }
+
+        // Display booking confirmation
+        cout << endl << endl << " Your booking has been confirmed!";
+        cout << endl << " Your new appointment to donate blood is on " << booking.booking_day << " at " << booking.booking_time << endl;
+
+        // Display subtitle
+        cout << endl << " _______________________________________________________________________________________________ ";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t  UPDATED TIME SLOTS AVAILABLE\t\t\t\t       " << " |";
+        cout << endl << "|" << "\t\t\t\t\t\t\t\t\t\t\t       " << " |";
+        // Display new available time slots
+        border_line();
+        cout << "|    MONDAY   |  " << week.monday1 << "  |  " << week.monday2 << "  |  " << week.monday3 << "  |  " << week.monday4 << "  |  " << week.monday5 << "  |  " << week.monday6 << "  |  " << week.monday7 << "  |  " << week.monday8 << "   |";
+        border_line();
+        cout << "|   TUESDAY   |  " << week.tuesday1 << "  |  " << week.tuesday2 << "  |  " << week.tuesday3 << "  |  " << week.tuesday4 << "  |  " << week.tuesday5 << "  |  " << week.tuesday6 << "  |  " << week.tuesday7 << "  |  " << week.tuesday8 << "   |";
+        border_line();
+        cout << "|   WEDNESDAY |  " << week.wednesday1 << "  |  " << week.wednesday2 << "  |  " << week.wednesday3 << "  |  " << week.wednesday4 << "  |  " << week.wednesday5 << "  |  " << week.wednesday6 << "  |  " << week.wednesday7 << "  |  " << week.wednesday8 << "   |";
+        border_line();
+        cout << "|   THURSDAY  |  " << week.thursday1 << "  |  " << week.thursday2 << "  |  " << week.thursday3 << "  |  " << week.thursday4 << "  |  " << week.thursday5 << "  |  " << week.thursday6 << "  |  " << week.thursday7 << "  |  " << week.thursday8 << "   |";
+        border_line();
+        cout << "|    FRIDAY   |  " << week.friday1 << "  |  " << week.friday2 << "  |  " << week.friday3 << "  |  " << week.friday4 << "  |  " << week.friday5 << "  |  " << week.friday6 << "  |  " << week.friday7 << "  |  " << week.friday8 << "   |";
+        border_line();
+
+        // Move to the right place in file and write the record
+        timeSlot.seekp(recordNumber * sizeof(week), ios::beg);
+        timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
+        reschedule.seekp(recordNumber * sizeof(booking), ios::beg);
+        reschedule.write(reinterpret_cast<char*>(&booking), sizeof(booking));
+    }
+    // Close data files
+    reschedule.close();
+} // End of reschedule_appointment function
+
+// Function to obtain new recipient registration information  ***COMPLETED***
+void recipient_registration()
+{
+    // Structure and file variables
+    fstream info;
+    Recipient_Details record;
+
+    system("cls"); //Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
     cout << endl << "    RECIPIENT REGISTRATION" << endl;
     cout << "--------------------------------" << endl << endl;
 
-    // Open file
+    // Open data file for writing
     info.open("Recipient.dat", ios::out | ios::app | ios::binary);
-
+    // Error message for non-existent file
     if (!info)
     {
-        //Error message for non-existent file
         cout << "Error opening file.";
     }
     // User input & writing in data file
@@ -1159,41 +1780,37 @@ void recipient_registration()
     {
         cout << "  First Name: ";
         cin.getline(record.name, SIZE);
-
         cout << "  Contact Number: ";
         cin.getline(record.contact_number, 14);
-
         cout << "  Email Address: ";
         cin.getline(record.email_address, SIZE);
-
         cout << "  Street Address: ";
         cin.getline(record.address_line1, SIZE);
-
         cout << "  Suburb/City: ";
         cin.getline(record.address_line2, SIZE);
-
         cout << "  Registration Status: ";
         cin.getline(record.registration_status, SIZE);
 
-        // User chooses their udername & password for future use 
+        // User chooses their username & password for future use 
         cout << endl << endl << "  Username: ";
         cin.getline(record.username, SIZE);
-
         cout << "  Password: ";
         cin.getline(record.password, SIZE);
 
+        // Writing user's input to data file
         info.write(reinterpret_cast<char*>(&record), sizeof(record));
-        // Close the file
+        // Close data file
         info.close();
     }
+    // Display registration confirmation
     cout << endl << "Thank you for registering! Please select Option 4 in the Main Menu to Login." << endl;
     line();
-}
+} // End of recipient_registration function
 
-//Existing Recipient Login  ***COMPLETED***
+// Function to obtain new recipient registration information  ***COMPLETED***
 void recipient_login()
 {
-    Recipient_Details record;
+    // Function and file variables
     fstream info;
     bool flag = false;
     char name[SIZE];
@@ -1201,17 +1818,17 @@ void recipient_login()
     int attempt = 0;
 
     system("cls"); //Clears console screen
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
+    // Display subtitle
     cout << endl << "  \tRECIPIENT LOGIN" << endl;
     cout << "--------------------------------" << endl << endl;
 
     // Open the file for reading
     info.open("Recipient.dat", ios::in | ios::binary);
-
+    // Error message for non-existent file
     if (!info)
     {
         cout << "Error in opening the file... " << endl;
@@ -1219,48 +1836,53 @@ void recipient_login()
     }
     else
     {
+        // Loop for 3 login attempts
         for (attempt = 0; attempt < 3; attempt++)
         {
-            //User Input
-            cout << "Enter Username: ";
+            // User Input
+            cout << " Enter Username: ";
             cin.getline(name, SIZE);
-            cout << "Enter Password: ";
+            cout << " Enter Password: ";
             cin.getline(pass, SIZE);
-
-            if (search_recipient_file(name, pass))
+            // Call search recipient function to read file for matching the entered details
+            if (search_recipient_file(name, pass)) // Do following if check is correct
             {
-                system("cls");
-                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!";
-                recipient_menu();
+                system("cls"); // Clears console screen
+                cout << "\t\t\t\t\t\t\t\t\tWelcome back " << name << "!"; // Will wellcome and display entered username on next screen
+                recipient_menu(); // Call recipient menu function
                 flag = true;
                 break;
             }
-            if (flag == false)
+            if (flag == false) // Display message if incorrect details entered
             {
                 cout << endl << "Incorrect Username or Password. Please try again." << endl << endl;
             }
         }
-        if (attempt > 2)
+        if (attempt > 2) // Close program if incorrect details entered 3 times
         {
             cout << endl << "Limit reached. Program Exited..." << endl << endl;
             exit(0);
         }
     }
-    //Close File
+    // Close data file
     info.close();
-}
+} // End of recipient_login function
 
-//Function to check login against recipient data file ***COMPLETED***
+// Function to check login against recipient data file ***COMPLETED***
 bool search_recipient_file(char name[], char pass[])
 {
+    // Structure, function, and file variables
     bool flag = false;
     fstream info;
     Recipient_Details record;
-    info.open("Recipient.dat", ios::in | ios::binary);
 
+    // Open data file for reading
+    info.open("Recipient.dat", ios::in | ios::binary);
     info.read(reinterpret_cast<char*>(&record), sizeof(record));
+
     while (!info.eof())
     {
+        // Check if entered username and password matches data file
         if ((strcmp(name, record.username) == 0) && (strcmp(pass, record.password) == 0))
         {
             flag = true;
@@ -1268,23 +1890,25 @@ bool search_recipient_file(char name[], char pass[])
         }
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
     }
-
+    // Close data file
     info.close();
+    // Return true/false flag to recipient login function
     return flag;
 }
 
-//Function to display Recipient Menu  ***COMPLETED***
+// Function to display recipient menu  ***COMPLETED***
 void recipient_menu()
 {
+    // Function variable
     int option;
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
 
     while (1)
     {
-        //Main Menu Display
+        // Dipslay subtitle and recipient menu
         cout << endl << "  \tRECIPIENT MENU" << endl;
         cout << "--------------------------------" << endl << endl;
         cout << " Access Donor Information via: " << endl;
@@ -1301,27 +1925,27 @@ void recipient_menu()
 
         switch (option)
         {
-        case 1: // Full Name
+        case 1: // Search by full name function
         {
             full_name();
             break;
         }
-        case 2: // Blood Group
+        case 2: // Search by blood group function
         {
             blood_group();
             break;
         }
-        case 3: // Location
+        case 3: // Search by location function
         {
             location();
             break;
         }
-        case 4:
+        case 4: // Exit program
         {
             cout << "Program Exited..." << endl << endl;
             exit(0);
         }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
@@ -1330,465 +1954,29 @@ void recipient_menu()
 
         }
     }
-}
+} // End of recipient_menu function
 
-//Function to search by Donor's full name & display ***COMPLETED***
+// Function to search by donor's full name & display ***COMPLETED***
 void full_name()
 {
+    // Structure, function, and file variables
     Donor_Details record;
     fstream info;
     bool flag = false;
     char firstName[SIZE];
     char lastName[SIZE];
 
-    system("cls"); //Clears console screen
-
+    system("cls"); // Clears console screen
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
-    // Open the file for reading
-    info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
-    {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        //User Input
-        cout << endl << "Search by Donor's Full Name" << endl << endl;
-
-        cout << " Enter First Name: ";
-        cin.getline(firstName, SIZE);
-
-        cout << " Enter Last Name: ";
-        cin.getline(lastName, SIZE);
-
-        cout << endl << "Retrieving matching records..." << endl << endl;
-        cout << endl << " ----------------------------------" << endl;
-
-        // Read & search for matching data
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-        while (!info.eof())
-        {
-            if ((strcmp(firstName, record.first_name) == 0) && (strcmp(lastName, record.last_name) == 0))
-            {
-                cout << endl << " Record Number:         " << record.record_number;
-                cout << endl << " First Name:            " << record.first_name;
-                cout << endl << " Last Name:             " << record.last_name;
-                cout << endl << " Date of Birth:         " << record.date_of_birth;
-                cout << endl << " Gender:                " << record.gender;
-                cout << endl << " Nationality:           " << record.nationality;
-                cout << endl << " Ethnicity:             " << record.ethnicity;
-                cout << endl << " Health Conditions:     " << record.health_conditions;
-                cout << endl << " Blood Group:           " << record.blood_group;
-                cout << endl << " Contact Number:        " << record.contact_number;
-                cout << endl << " Email Address:         " << record.email_address;
-                cout << endl << " Street Address:        " << record.address_line1;
-                cout << endl << " Suburb/City:           " << record.address_line2;
-                cout << endl << " Date of Last Donation: " << record.last_donation;
-                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
-                cout << endl << " ----------------------------------" << endl;
-                flag = true;
-            }
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-        }
-
-        if (flag == true)
-        {
-            //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the name provided." << endl;
-            line();
-        }
-        else
-        {
-            //Displayed message when searched name is not in file
-            cout << endl << firstName << " " << lastName << " cannot be found in our records. Please try again." << endl;
-            line();
-        }
-
-    }
-    //Close File
-    info.close();
-}
-
-//Function to search by Donor blood type & display ***COMPLETED***
-void blood_group()
-{
-    Donor_Details record;
-    fstream info;
-    bool flag = false;
-    char bloodGroup[14];
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    // Open the file for reading
-    info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
-    {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        //User Input
-        cout << endl << "Search by Blood Group" << endl << endl;
-
-        cout << " Enter Blood Type: ";
-        cin.getline(bloodGroup, 14);
-
-        cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------" << endl;
-
-        // Read & search for matching data
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-        while (!info.eof())
-        {
-            if (strcmp(bloodGroup, record.blood_group) == 0)
-            {
-                cout << endl << " Record Number:         " << record.record_number;
-                cout << endl << " First Name:            " << record.first_name;
-                cout << endl << " Last Name:             " << record.last_name;
-                cout << endl << " Date of Birth:         " << record.date_of_birth;
-                cout << endl << " Gender:                " << record.gender;
-                cout << endl << " Nationality:           " << record.nationality;
-                cout << endl << " Ethnicity:             " << record.ethnicity;
-                cout << endl << " Health Conditions:     " << record.health_conditions;
-                cout << endl << " Blood Group:           " << record.blood_group;
-                cout << endl << " Contact Number:        " << record.contact_number;
-                cout << endl << " Email Address:         " << record.email_address;
-                cout << endl << " Street Address:        " << record.address_line1;
-                cout << endl << " Suburb/City:           " << record.address_line2;
-                cout << endl << " Date of Last Donation: " << record.last_donation;
-                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
-                cout << endl << " ----------------------------------" << endl;
-                flag = true;
-            }
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-        }
-
-        if (flag == true)
-        {
-            //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the Blood Type provided." << endl;
-            line();
-        }
-        else
-        {
-            //Displayed message when searched name is not in file
-            cout << endl << bloodGroup << " cannot be found in our records. Please try again." << endl;
-            line();
-        }
-    }
-
-
-    //Close File
-    info.close();
-}
-
-//Function to search by Donor loaction & display ***COMPLETED***
-void location()
-{
-    Donor_Details record;
-    fstream info;
-    bool flag = false;
-    char location[51];
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    // Open the file for reading
-    info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
-    {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        //User Input
-        cout << endl << "Search by Location" << endl << endl;
-
-        cout << " Enter Clinic Location: ";
-        cin.getline(location, 14);
-
-        cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------" << endl;
-
-        // Read & search for matching data
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-        while (!info.eof())
-        {
-            if (strcmp(location, record.clinic_location) == 0)
-            {
-                cout << endl << " Record Number:         " << record.record_number;
-                cout << endl << " First Name:            " << record.first_name;
-                cout << endl << " Last Name:             " << record.last_name;
-                cout << endl << " Date of Birth:         " << record.date_of_birth;
-                cout << endl << " Gender:                " << record.gender;
-                cout << endl << " Nationality:           " << record.nationality;
-                cout << endl << " Ethnicity:             " << record.ethnicity;
-                cout << endl << " Health Conditions:     " << record.health_conditions;
-                cout << endl << " Blood Group:           " << record.blood_group;
-                cout << endl << " Contact Number:        " << record.contact_number;
-                cout << endl << " Email Address:         " << record.email_address;
-                cout << endl << " Street Address:        " << record.address_line1;
-                cout << endl << " Suburb/City:           " << record.address_line2;
-                cout << endl << " Date of Last Donation: " << record.last_donation;
-                cout << endl << " Clinic Location:       " << record.clinic_location << endl;
-                cout << endl << " --------------------------------- " << endl;
-                flag = true;
-            }
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-        }
-
-        if (flag == true)
-        {
-            //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the location provided." << endl;
-            line();
-        }
-        else
-        {
-            //Displayed message when searched name is not in file
-            cout << endl << location << " cannot be found in our records. Please try again." << endl;
-            line();
-        }
-    }
-    //Close File
-    info.close();
-}
-
-//Function for Admin Login (fixed username & password)  ***COMPLETED***
-void admin_login()
-{
-    string username("Admin");
-    string password("Password");
-    string user;
-    string pass;
-    bool flag = false;
-
-    int attempt = 0;
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    cout << endl << " \tADMIN LOGIN" << endl;
+    // Display subtitle
+    cout << endl << "      FULL NAME SEARCH" << endl;
     cout << "--------------------------------" << endl << endl;
-
-    while (attempt < 3)
-    {
-        cout << " Enter Username: ";
-        cin >> user;
-        cout << " Enter Password: ";
-        cin >> pass;
-
-        if ((user == username) && (pass == password))
-        {
-            system("cls"); //Clears console screen
-            cout << "\t\t\t\t\t\t\t\t\tWelcome back " << user << "!";
-            flag = true;
-            admin_menu();
-        }
-        else if (flag == false)
-        {
-            cout << endl << "Incorrect Username or Password. Please try again." << endl;
-            line();
-            attempt++;
-        }
-        while (attempt > 2)
-        {
-            cout << "Limit reached. Program Exited..." << endl << endl;
-            exit(0);
-        }
-    }
-
-    line();
-}
-
-//Function to display Admin Menu  ***COMPLETED***
-void admin_menu()
-{
-    int option;
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    do
-    {
-        //Main Menu Display
-        cout << endl << "  \tADMIN MENU" << endl;
-        cout << "--------------------------------" << endl << endl;
-        cout << " 1. View Recipient Information" << endl;
-        cout << " 2. View Donor Information" << endl;
-        cout << " 3. Update Donor's Blood Report" << endl;
-        cout << " 4. Donors Report" << endl;
-        cout << " 5. Blood Group Report" << endl;
-        cout << " 6. Location Report" << endl;
-        cout << " 7. Recipient Report" << endl;
-        cout << " 8. Exit..." << endl;
-
-        cout << endl << " Enter your option: "; //User Option Input
-        cin >> option;
-        cin.ignore(); //Clears input buffer
-        cout << endl;
-
-        switch (option)
-        {
-
-        case 1: // View Recipient Information
-        {
-            search_recipient();
-            break;
-        }
-        case 2: // View Donor Information
-        {
-            search_donor();
-            break;
-        }
-        case 3: // Update Donor's Blood Report
-        {
-            update_blood();
-            break;
-        }
-        case 4: // Donors Report
-        {
-            donor_report();
-            break;
-        }
-        case 5: // Blood Group Report
-        {
-            blood_report();
-            break;
-        }
-        case 6: // Location Report
-        {
-            location_report();
-            break;
-        }
-        case 7: // Recipient Report
-        {
-            recipient_report();
-            break;
-        }
-        case 8:
-        {
-            cout << "Program Exited..." << endl << endl;
-            exit(0);
-        }
-        default: cout << "Invalid selection. Please try again." << endl;
-            line();
-        }
-    } while (option < 8);
-}
-
-//Function for Admin to search and view Recipient Information ***COMPLETED***
-void search_recipient()
-{
-    fstream info;
-    Recipient_Details record;
-    bool flag = false;
-    char name[SIZE];
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    // Open the file for reading
-    info.open("Recipient.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
-    {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        //User Input
-        cout << endl << "Search by Recipient's Name" << endl << endl;
-
-        cout << " Enter Name: ";
-        cin.getline(name, SIZE);
-
-
-        cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------" << endl;
-
-        // Read & search for matching data
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-        while (!info.eof())
-        {
-            if ((strcmp(name, record.name) == 0))
-            {
-                cout << endl << " Name:                  " << record.name;
-                cout << endl << " Contact Number:        " << record.contact_number;
-                cout << endl << " Email Address:         " << record.email_address;
-                cout << endl << " Street Address:        " << record.address_line1;
-                cout << endl << " Suburb/City:           " << record.address_line2;
-                cout << endl << " Registration Status:   " << record.registration_status << endl;
-                cout << endl << " ----------------------------------" << endl;
-                flag = true;
-            }
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-        }
-
-        if (flag == true)
-        {
-            //Displayed message to confirm all relevent data has been shown
-            cout << endl << "That's all the information in the file matching the name provided." << endl;
-            line();
-        }
-        else
-        {
-            //Displayed message when searched name is not in file
-            cout << endl << name << " cannot be found in our records. Please try again." << endl;
-            line();
-        }
-
-    }
-    //Close File
-    info.close();
-}
-
-//Function for Admin to search and view Donor Information ***COMPLETED***
-void search_donor()
-{
-    Donor_Details record;
-    fstream info;
-    bool flag = false;
-    char firstName[SIZE];
-    char lastName[SIZE];
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
+    // Error message for non-existent file
     if (!info)
     {
         cout << "Error in opening the file... " << endl;
@@ -1796,21 +1984,17 @@ void search_donor()
     }
     else
     {
-        //User Input
-        cout << endl << "Search by Donor's Full Name" << endl << endl;
-
+        // User Input
+        cout << "Search by Donor's Full Name" << endl << endl;
         cout << " Enter First Name: ";
         cin.getline(firstName, SIZE);
-
         cout << " Enter Last Name: ";
         cin.getline(lastName, SIZE);
+        cout << endl << "Retrieving matching records..." << endl << endl;
+        cout << "----------------------------------" << endl;
 
-        cout << endl << "Retrieving matching records..." << endl;
-        cout << endl << " ----------------------------------" << endl;
-
-        // Read & search for matching data
+        // Searching user's input in data file and displaying results
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
         while (!info.eof())
         {
             if ((strcmp(firstName, record.first_name) == 0) && (strcmp(lastName, record.last_name) == 0))
@@ -1830,46 +2014,46 @@ void search_donor()
                 cout << endl << "  Suburb/City:           " << record.address_line2;
                 cout << endl << "  Date of Last Donation: " << record.last_donation;
                 cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
-                cout << endl << " ----------------------------------" << endl;
+                cout << endl << "----------------------------------" << endl;
                 flag = true;
             }
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
         }
-
-        if (flag == true)
+        if (flag == true) // Display to confirm all relevent data has been shown
         {
-            //Displayed message to confirm all relevent data has been shown
             cout << endl << "That's all the information in the file matching the name provided." << endl;
             line();
         }
-        else
+        else // Display when searched name is not in file
         {
-            //Displayed message when searched name is not in file
             cout << endl << firstName << " " << lastName << " cannot be found in our records. Please try again." << endl;
             line();
         }
-
     }
-    //Close File
+    //Close data file
     info.close();
-}
+} // End of full_name function
 
-//Function for Admin to update Donor's Blood Type ***COMPLETED***
-void update_blood()
+// Function to search by donor blood type & display ***COMPLETED***
+void blood_group()
 {
+    // Structure, function, and file variables
     Donor_Details record;
     fstream info;
-    long long int recordNumber;
+    bool flag = false;
+    char bloodGroup[14];
 
-    system("cls"); //Clears console screen
+    system("cls"); // Clears console screen
+    // Display title/header
+    border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    line();
-
-    cout << endl << "  \tUPDATE INFORMATION" << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << "      BLOOD GROUP SEARCH" << endl;
     cout << "--------------------------------" << endl << endl;
-
-    info.open("Donor.dat", ios::in | ios::out | ios::binary);
-
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    // Error message for non-existent file
     if (!info)
     {
         cout << "Error in opening the file... " << endl;
@@ -1877,10 +2061,491 @@ void update_blood()
     }
     else
     {
+        // User Input
+        cout << "Search by Blood Group" << endl << endl;
+        cout << " Enter Blood Type: ";
+        cin.getline(bloodGroup, 14);
+        cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << "----------------------------------" << endl;
+
+        // Searching user's input in data file and displaying results
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        while (!info.eof())
+        {
+            if (strcmp(bloodGroup, record.blood_group) == 0)
+            {
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "----------------------------------" << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+
+        if (flag == true) // Display to confirm all relevent data has been shown
+        {
+            cout << endl << "That's all the information in the file matching the Blood Type provided." << endl;
+            line();
+        }
+        else // Display when searched name is not in file
+        {
+            cout << endl << bloodGroup << " cannot be found in our records. Please try again." << endl;
+            line();
+        }
+    }
+    //Close data file
+    info.close();
+} // End of blood_group function
+
+// Function to search by donor loaction & display ***COMPLETED***
+void location()
+{
+    // Structure, function, and file variables
+    Donor_Details record;
+    fstream info;
+    bool flag = false;
+    char location[51];
+
+    system("cls"); //Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << "      LOCATION SEARCH" << endl;
+    cout << "--------------------------------" << endl << endl;
+    // Open the file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    // Error message for non-existent file
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        //User Input
+        cout << "Search by Location" << endl << endl;
+        cout << " Enter Clinic Location: ";
+        cin.getline(location, 14);
+        cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << "----------------------------------" << endl;
+
+        // Searching user's input in data file and displaying results
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        while (!info.eof())
+        {
+            if (strcmp(location, record.clinic_location) == 0)
+            {
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "--------------------------------- " << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+
+        if (flag == true) // Display to confirm all relevent data has been shown
+        {
+            cout << endl << "That's all the information in the file matching the location provided." << endl;
+            line();
+        }
+        else // Display when searched name is not in file
+        {
+            cout << endl << location << " cannot be found in our records. Please try again." << endl;
+            line();
+        }
+    }
+    //Close data file
+    info.close();
+} // End of location function
+
+// Function for admin login (fixed username & password)  ***COMPLETED***
+void admin_login()
+{
+    // Function variables
+    string username("Admin");
+    string password("Password");
+    string user;
+    string pass;
+    bool flag = false;
+    int attempt = 0;
+
+    system("cls"); //Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << " \tADMIN LOGIN" << endl;
+    cout << "--------------------------------" << endl << endl;
+
+    // Loop for 3 login attempts
+    while (attempt < 3)
+    {
+        // User input
+        cout << " Enter Username: ";
+        cin >> user;
+        cout << " Enter Password: ";
+        cin >> pass;
+        // Check if input matches default 
+        if ((user == username) && (pass == password))
+        {
+            system("cls"); //Clears console screen
+            cout << "\t\t\t\t\t\t\t\t\tWelcome back " << user << "!"; // Will wellcome and display entered username on next screen
+            flag = true;
+            admin_menu(); // Call admin menu function
+        }
+        else if (flag == false) // Display message if incorrect details entered
+        {
+            cout << endl << "Incorrect Username or Password. Please try again." << endl;
+            line();
+            attempt++;
+        }
+        while (attempt > 2) // Close program if incorrect details entered 3 times
+        {
+            cout << "Limit reached. Program Exited..." << endl << endl;
+            exit(0);
+        }
+    }
+    line();
+} // End of admin_login function
+
+// Function to display admin menu  ***COMPLETED***
+void admin_menu()
+{
+    // Function variable
+    int option;
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    do
+    {
+        // Display subtitle and admin menu
+        cout << endl << "  \tADMIN MENU" << endl;
+        cout << "--------------------------------" << endl << endl;
+        cout << " 1. View Recipient Information" << endl;
+        cout << " 2. Recipient Report" << endl;
+        cout << " 3. View Donor Information" << endl;
+        cout << " 4. Donors Report" << endl;
+        cout << " 5. Update Donor's Blood Report" << endl;
+        cout << " 6. Blood Group Report" << endl;
+        cout << " 7. Location Report" << endl;
+        cout << " 8. Exit..." << endl;
+
+        cout << endl << " Enter your option: "; //User Option Input
+        cin >> option;
+        cin.ignore(); //Clears input buffer
+        cout << endl;
+
+        switch (option)
+        {
+
+        case 1: // Search recipient information function
+        {
+            search_recipient();
+            break;
+        }
+        case 2: // View recipient report function 
+        {
+            recipient_report();
+            break;
+        }
+        case 3: // Search donor information function
+        {
+            search_donor();
+            break;
+        }
+        case 4: // View donors report function
+        {
+            donor_report();
+            break;
+        }
+        case 5: // Update donor's blood group function
+        {
+            update_blood();
+            break;
+        }
+        case 6: // View blood group report function
+        {
+            blood_report();
+            break;
+        }
+        case 7: // View location report function
+        {
+            location_report();
+            break;
+        }
+        case 8: // Exit program
+        {
+            cout << "Program Exited..." << endl << endl;
+            exit(0);
+        }
+        default: // Incorrect input. Allows user to try a different input
+        {
+            cout << "Invalid selection. Please try again." << endl;
+            line();
+        }
+        }
+    } while (option < 8);
+} // End of admin_menu function
+
+// Function for admin to search and view Recipient Information ***COMPLETED***
+void search_recipient()
+{
+    // Structure, function and file variables
+    fstream info;
+    Recipient_Details record;
+    bool flag = false;
+    char name[SIZE];
+
+    system("cls"); // Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << "     RECIPIENT SEARCH" << endl;
+    cout << "--------------------------------" << endl << endl;
+    // Open data file for reading
+    info.open("Recipient.dat", ios::in | ios::binary);
+    // Error message for non-existent file
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        //User Input
+        cout << endl << "Search by Recipient's Name" << endl << endl;
+        cout << " Enter Name: ";
+        cin.getline(name, SIZE);
+        cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << "----------------------------------" << endl;
+
+        // Searching user's input in data file and displaying results
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        while (!info.eof())
+        {
+            if ((strcmp(name, record.name) == 0))
+            {
+                cout << endl << "  Name:                  " << record.name;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Registration Status:   " << record.registration_status << endl;
+                cout << endl << "----------------------------------" << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+        if (flag == true) // Display to confirm all relevent data has been shown
+        {
+            cout << endl << "That's all the information in the file matching the name provided." << endl;
+            line();
+        }
+        else // Display when searched name is not in file
+        {
+            cout << endl << name << " cannot be found in our records. Please try again." << endl;
+            line();
+        }
+    }
+    //Close data file
+    info.close();
+} // End of search_recipient function
+
+// Function for admin to view complete recipient report ***COMPLETED***
+void recipient_report()
+{
+    // Structure and file variables
+    Recipient_Details record;
+    fstream info;
+
+    system("cls"); //Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << "  \tRECIPIENT LIST" << endl;
+    cout << "--------------------------------" << endl;
+
+    // Open the file for reading
+    info.open("Recipient.dat", ios::in | ios::binary);
+    // Error message for non-existent file
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        // Display all recipient records
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        while (!info.eof())
+        {
+            cout << endl << "  Name:                  " << record.name;
+            cout << endl << "  Contact Number:        " << record.contact_number;
+            cout << endl << "  Email Address:         " << record.email_address;
+            cout << endl << "  Street Address:        " << record.address_line1;
+            cout << endl << "  Suburb/City:           " << record.address_line2;
+            cout << endl << "  Registration Status:   " << record.registration_status << endl;
+            cout << endl << "----------------------------------" << endl;
+
+            //Read one structure at time & display
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+    }
+    // Display to confirm all relevent data has been shown
+    cout << endl << "All records on file retrieved..." << endl;
+    //Close File
+    info.close();
+    line();
+} // End of recipient_report funtion
+
+// Function for admin to search and view donor information ***COMPLETED***
+void search_donor()
+{
+    // Structure, function and file variables
+    Donor_Details record;
+    fstream info;
+    bool flag = false;
+    char firstName[SIZE];
+    char lastName[SIZE];
+
+    system("cls"); // Clears console screen
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+    // Display subtitle
+    cout << endl << "      DONOR SEARCH" << endl;
+    cout << "--------------------------------" << endl << endl;
+    // Open data file for reading
+    info.open("Donor.dat", ios::in | ios::binary);
+    // Error message for non-existent file
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        //User Input
+        cout << "Search by Donor's Full Name" << endl << endl;
+        cout << " Enter First Name: ";
+        cin.getline(firstName, SIZE);
+        cout << " Enter Last Name: ";
+        cin.getline(lastName, SIZE);
+        cout << endl << "Retrieving matching records..." << endl;
+        cout << endl << "----------------------------------" << endl;
+
+        // Searching user's input in data file and displaying results
+        info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        while (!info.eof())
+        {
+            if ((strcmp(firstName, record.first_name) == 0) && (strcmp(lastName, record.last_name) == 0))
+            {
+                cout << endl << "  Record Number:         " << record.record_number;
+                cout << endl << "  First Name:            " << record.first_name;
+                cout << endl << "  Last Name:             " << record.last_name;
+                cout << endl << "  Date of Birth:         " << record.date_of_birth;
+                cout << endl << "  Gender:                " << record.gender;
+                cout << endl << "  Nationality:           " << record.nationality;
+                cout << endl << "  Ethnicity:             " << record.ethnicity;
+                cout << endl << "  Health Conditions:     " << record.health_conditions;
+                cout << endl << "  Blood Group:           " << record.blood_group;
+                cout << endl << "  Contact Number:        " << record.contact_number;
+                cout << endl << "  Email Address:         " << record.email_address;
+                cout << endl << "  Street Address:        " << record.address_line1;
+                cout << endl << "  Suburb/City:           " << record.address_line2;
+                cout << endl << "  Date of Last Donation: " << record.last_donation;
+                cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
+                cout << endl << "----------------------------------" << endl;
+                flag = true;
+            }
+            info.read(reinterpret_cast<char*>(&record), sizeof(record));
+        }
+
+        if (flag == true) // Display to confirm all relevent data has been shown
+        {
+            cout << endl << "That's all the information in the file matching the name provided." << endl;
+            line();
+        }
+        else // Display when searched name is not in file
+        {
+            cout << endl << firstName << " " << lastName << " cannot be found in our records. Please try again." << endl;
+            line();
+        }
+
+    }
+    //Close data file
+    info.close();
+} // End of search_donor function
+
+// Function for admin to update sonor's blood type ***COMPLETED***
+void update_blood()
+{
+    // Structure, function and file variables
+    Donor_Details record;
+    fstream info;
+    long long int recordNumber;
+
+    system("cls"); // Clears console screen
+    // Display title/header
+    // Display title/header
+    border_line();
+    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
+    border_line();
+
+    // Display subtitle
+    cout << endl << "\tUPDATE BLOOD GROUP" << endl;
+    cout << "--------------------------------" << endl << endl;
+    // Open data file for writing
+    info.open("Donor.dat", ios::in | ios::out | ios::binary);
+    // Error message for non-existent file
+    if (!info)
+    {
+        cout << "Error in opening the file... " << endl;
+        line();
+    }
+    else
+    {
+        // User input
         cout << "Enter your Record Number: ";
         cin >> recordNumber;
         cin.ignore();
-
+        // Searching user's input in data file and displaying results
         info.seekg(recordNumber * sizeof(record), ios::beg);
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
@@ -1901,9 +2566,8 @@ void update_blood()
         cout << endl << "  Clinic Location:       " << record.clinic_location << endl;
         cout << "----------------------------------" << endl;
 
-        //Get new data from user and edit in-memory record
-        cout << endl << "Enter the new data: " << endl << endl;
-
+        // Get new data from user and edit in-memory record
+        cout << endl << "Enter the new data:" << endl << endl;
         cout << "  Blood Group: ";
         cin.getline(record.blood_group, SIZE);
 
@@ -1911,29 +2575,32 @@ void update_blood()
         info.seekp(recordNumber * sizeof(record), ios::beg);
         info.write(reinterpret_cast<char*>(&record), sizeof(record));
     }
-    // Close the file
+    // Display confirmation of update
+    cout << endl << "The required Blood Group has been updated." << endl;
+    // Close data file
     info.close();
     line();
-}
+} // End of update_blood function
 
-//Function for Admin to view complete Donor Report ***COMPLETED***
+// Function for admin to view complete donor report ***COMPLETED***
 void donor_report()
 {
+    // Structure and file variables
     Donor_Details record;
     fstream info;
 
     system("cls"); //Clears console screen
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
-
+    // Display subtitle
     cout << endl << "  \tDONOR LIST" << endl;
     cout << "--------------------------------" << endl;
 
     // Open the file for reading
     info.open("Donor.dat", ios::in | ios::binary);
-    //Error Message
+    // Error message for non-existent file
     if (!info)
     {
         cout << "Error in opening the file... " << endl;
@@ -1941,43 +2608,42 @@ void donor_report()
     }
     else
     {
-        // Display All Records
+        // Display all donor records
         info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
         while (!info.eof())
         {
-            cout << endl << " Record Number:         " << record.record_number;
-            cout << endl << " First Name:            " << record.first_name;
-            cout << endl << " Last Name:             " << record.last_name;
-            cout << endl << " Date of Birth:         " << record.date_of_birth;
-            cout << endl << " Gender:                " << record.gender;
-            cout << endl << " Nationality:           " << record.nationality;
-            cout << endl << " Ethnicity:             " << record.ethnicity;
-            cout << endl << " Health Conditions:     " << record.health_conditions;
-            cout << endl << " Blood Group:           " << record.blood_group;
-            cout << endl << " Contact Number:        " << record.contact_number;
-            cout << endl << " Email Address:         " << record.email_address;
-            cout << endl << " Street Address:        " << record.address_line1;
-            cout << endl << " Suburb/City:           " << record.address_line2;
-            cout << endl << " Date of Last Donation: " << record.last_donation;
-            cout << endl << " Clinic Location:       " << record.clinic_location << endl << endl;
+            cout << endl << "  Record Number:         " << record.record_number;
+            cout << endl << "  First Name:            " << record.first_name;
+            cout << endl << "  Last Name:             " << record.last_name;
+            cout << endl << "  Date of Birth:         " << record.date_of_birth;
+            cout << endl << "  Gender:                " << record.gender;
+            cout << endl << "  Nationality:           " << record.nationality;
+            cout << endl << "  Ethnicity:             " << record.ethnicity;
+            cout << endl << "  Health Conditions:     " << record.health_conditions;
+            cout << endl << "  Blood Group:           " << record.blood_group;
+            cout << endl << "  Contact Number:        " << record.contact_number;
+            cout << endl << "  Email Address:         " << record.email_address;
+            cout << endl << "  Street Address:        " << record.address_line1;
+            cout << endl << "  Suburb/City:           " << record.address_line2;
+            cout << endl << "  Date of Last Donation: " << record.last_donation;
+            cout << endl << "  Clinic Location:       " << record.clinic_location << endl << endl;
             cout << "----------------------------------" << endl;
 
             //Read one structure at time & display
             info.read(reinterpret_cast<char*>(&record), sizeof(record));
         }
     }
-    //Close File
-    info.close();
-
+    // Display to confirm all relevent data has been shown
     cout << endl << "All records on file retrieved..." << endl;
-
+    //Close data file
+    info.close();
     line();
 }
 
-//Function for Admin to search and view Blood Report ***COMPLETED***
+// Function for admin to search and view blood report ***COMPLETED***
 void blood_report()
 {
+    // Structure, function, and file variables
     Donor_Details record;
     fstream info;
     int option;
@@ -1985,13 +2651,14 @@ void blood_report()
     char bloodGroup[14];
 
     system("cls"); //Clears console screen
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
     do
     {
-        cout << "\tBLOOD GROUP" << endl;
+        // Display subtitle and blood group menu
+        cout << endl << "\tBLOOD GROUP" << endl;
         cout << "--------------------------------" << endl;
         cout << endl << " 1. Search Blood Type";
         cout << endl << " 2. View All Blood Types";
@@ -2000,7 +2667,6 @@ void blood_report()
         cout << endl << endl << " Enter your option: "; //User Option Input
         cin >> option;
         cin.ignore(); //Clears input buffer
-
         cout << endl << endl;
 
         switch (option)
@@ -2008,14 +2674,16 @@ void blood_report()
         case 1:
         {
             system("cls"); //Clears console screen
-
+            // Display title/header
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
+            // Display subtitle
+            cout << endl << "    BLOOD TYPE SEARCH" << endl;
+            cout << "--------------------------------" << endl << endl;
             // Open the file for reading
             info.open("Donor.dat", ios::in | ios::binary);
-            //Error Message
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -2024,72 +2692,56 @@ void blood_report()
             else
             {
                 //User Input
-                cout << endl << "Search by Blood Group" << endl << endl;
-
+                cout << "Search by Blood Group" << endl << endl;
                 cout << " Enter Blood Type: ";
                 cin.getline(bloodGroup, 14);
-
                 cout << endl << "Retrieving matching records..." << endl;
-                cout << endl << " ----------------------------------" << endl;
+                cout << endl << "----------------------------------" << endl;
 
-                // Read & search for matching data
+                cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tBlood Group:";
+                cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t************" << endl;
+                // Searching user's input in data file and displaying results
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
                 while (!info.eof())
                 {
                     if (strcmp(bloodGroup, record.blood_group) == 0)
                     {
-                        cout << endl << " Record Number:         " << record.record_number;
-                        cout << endl << " First Name:            " << record.first_name;
-                        cout << endl << " Last Name:             " << record.last_name;
-                        cout << endl << " Date of Birth:         " << record.date_of_birth;
-                        cout << endl << " Gender:                " << record.gender;
-                        cout << endl << " Nationality:           " << record.nationality;
-                        cout << endl << " Ethnicity:             " << record.ethnicity;
-                        cout << endl << " Health Conditions:     " << record.health_conditions;
-                        cout << endl << " Blood Group:           " << record.blood_group;
-                        cout << endl << " Contact Number:        " << record.contact_number;
-                        cout << endl << " Email Address:         " << record.email_address;
-                        cout << endl << " Street Address:        " << record.address_line1;
-                        cout << endl << " Suburb/City:           " << record.address_line2;
-                        cout << endl << " Date of Last Donation: " << record.last_donation;
-                        cout << endl << " Clinic Location:       " << record.clinic_location << endl;
-                        cout << endl << " ----------------------------------" << endl;
+                        cout << endl << " " << record.record_number << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number << "\t\t" << record.blood_group;
+                        cout << endl << endl;
                         flag = true;
                     }
+                    //Read one structure at time & display
                     info.read(reinterpret_cast<char*>(&record), sizeof(record));
                 }
-
-                if (flag == true)
+                if (flag == true) // Display to confirm all relevent data has been shown
                 {
-                    //Displayed message to confirm all relevent data has been shown
                     cout << endl << "That's all the information in the file matching the Blood Type provided." << endl;
                     line();
                 }
-                else
+                else // Display when searched name is not in file
                 {
-                    //Displayed message when searched name is not in file
                     cout << endl << bloodGroup << " cannot be found in our records. Please try again." << endl;
                     line();
                 }
             }
+            // Close data file
             info.close();
             break;
         }
         case 2:
         {
             system("cls"); //Clears console screen
-
+            // Display title/header
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
-            cout << "\tBLOOD GROUP REPORT" << endl;
+            // Display subtitle
+            cout << endl << "\tBLOOD GROUP REPORT" << endl;
             cout << "--------------------------------" << endl;
 
             // Open the file for reading
             info.open("Donor.dat", ios::in | ios::binary);
-            //Error Message
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -2100,9 +2752,8 @@ void blood_report()
                 cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tBlood Group:";
                 cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t************" << endl;
 
-                // Display All Records
+                // Display all blood group records
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
                 while (!info.eof())
                 {
                     cout << endl << " " << record.record_number << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number << "\t\t" << record.blood_group;
@@ -2112,35 +2763,35 @@ void blood_report()
                     info.read(reinterpret_cast<char*>(&record), sizeof(record));
                 }
             }
-            //Close File
-            info.close();
-
+            // Display to confirm all relevent data has been shown
             cout << endl << "All records on file retrieved..." << endl;
-
+            // Close data file
+            info.close();
             line();
             break;
         }
         case 3:
         {
-            system("cls");
+            system("cls"); // Clears console screen
             // Re-Displaying header as it won't appear breaking out of this menu otherwise
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
             break;
         }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
         }
         }
     } while (option < 3);
-}
+} // End of blood_report function
 
-//Function for Admin to search and view Location Report ***COMPLETED***
+// Function for admin to search and view location Report ***COMPLETED***
 void location_report()
 {
+    // Structure, function, and file variables
     Donor_Details record;
     fstream info;
     int option;
@@ -2148,13 +2799,14 @@ void location_report()
     char location[SIZE];
 
     system("cls"); //Clears console screen
-
+    // Display title/header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
     border_line();
     do
     {
-        cout << "\tLOCATION" << endl;
+        // Display subtitle and location menu
+        cout << endl << "\tLOCATION" << endl;
         cout << "--------------------------------" << endl;
         cout << endl << " 1. Search Location";
         cout << endl << " 2. View All Locations";
@@ -2163,7 +2815,6 @@ void location_report()
         cout << endl << endl << " Enter your option: "; //User Option Input
         cin >> option;
         cin.ignore(); //Clears input buffer
-
         cout << endl << endl;
 
         switch (option)
@@ -2171,14 +2822,16 @@ void location_report()
         case 1:
         {
             system("cls"); //Clears console screen
-
+            // Display title/header
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
+            // Display subtitle
+            cout << endl << "    LOCATION SEARCH" << endl;
+            cout << "--------------------------------" << endl << endl;
             // Open the file for reading
             info.open("Donor.dat", ios::in | ios::binary);
-            //Error Message
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -2187,73 +2840,56 @@ void location_report()
             else
             {
                 //User Input
-                cout << endl << "Search by Location" << endl << endl;
-
+                cout << "Search by Location" << endl << endl;
                 cout << " Enter Clinic Location: ";
                 cin.getline(location, 14);
-
                 cout << endl << "Retrieving matching records..." << endl;
-                cout << endl << " ----------------------------------" << endl;
+                cout << endl << "----------------------------------" << endl;
 
-                // Read & search for matching data
+                cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tLocation:";
+                cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t*********" << endl;
+                // Searching user's input in data file and displaying results
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
                 while (!info.eof())
                 {
                     if (strcmp(location, record.clinic_location) == 0)
                     {
-                        cout << endl << " Record Number:         " << record.record_number;
-                        cout << endl << " First Name:            " << record.first_name;
-                        cout << endl << " Last Name:             " << record.last_name;
-                        cout << endl << " Date of Birth:         " << record.date_of_birth;
-                        cout << endl << " Gender:                " << record.gender;
-                        cout << endl << " Nationality:           " << record.nationality;
-                        cout << endl << " Ethnicity:             " << record.ethnicity;
-                        cout << endl << " Health Conditions:     " << record.health_conditions;
-                        cout << endl << " Blood Group:           " << record.blood_group;
-                        cout << endl << " Contact Number:        " << record.contact_number;
-                        cout << endl << " Email Address:         " << record.email_address;
-                        cout << endl << " Street Address:        " << record.address_line1;
-                        cout << endl << " Suburb/City:           " << record.address_line2;
-                        cout << endl << " Date of Last Donation: " << record.last_donation;
-                        cout << endl << " Clinic Location:       " << record.clinic_location << endl;
-                        cout << endl << " --------------------------------- " << endl;
+                        cout << endl << " " << record.record_number << "\t\t" << record.first_name << " " << record.last_name << "\t\t" << record.contact_number << "\t\t" << record.clinic_location;
+                        cout << endl << endl;
                         flag = true;
                     }
+                    //Read one structure at time & display
                     info.read(reinterpret_cast<char*>(&record), sizeof(record));
                 }
-
-                if (flag == true)
+                if (flag == true) // Display to confirm all relevent data has been shown
                 {
-                    //Displayed message to confirm all relevent data has been shown
                     cout << endl << "That's all the information in the file matching the location provided." << endl;
                     line();
                 }
-                else
+                else // Display when searched name is not in file
                 {
-                    //Displayed message when searched name is not in file
                     cout << endl << location << " cannot be found in our records. Please try again." << endl;
                     line();
                 }
             }
-            //Close File
+            //Close data file
             info.close();
             break;
         }
         case 2:
         {
             system("cls"); //Clears console screen
-
+            // Display title/header
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
-
+            // Display subtitle
             cout << endl << "\tLOCATION REPORT" << endl;
             cout << "--------------------------------" << endl;
 
             // Open the file for reading
             info.open("Donor.dat", ios::in | ios::binary);
-            //Error Message
+            // Error message for non-existent file
             if (!info)
             {
                 cout << "Error in opening the file... " << endl;
@@ -2264,7 +2900,7 @@ void location_report()
                 cout << endl << " Record:" << "\tFull Name:" << "\t\tContact Number:" << "\t\tLocation:";
                 cout << endl << " *******" << "\t**********" << "\t\t***************" << "\t\t*********" << endl;
 
-                // Display All Records
+                // Display all location records
                 info.read(reinterpret_cast<char*>(&record), sizeof(record));
 
                 while (!info.eof())
@@ -2276,83 +2912,32 @@ void location_report()
                     info.read(reinterpret_cast<char*>(&record), sizeof(record));
                 }
             }
-            //Close File
-            info.close();
-
+            // Display to confirm all relevent data has been shown
             cout << endl << "All records on file retrieved..." << endl;
-
+            //Close data file
+            info.close();
             line();
             break;
         }
         case 3:
         {
-            system("cls");
+            system("cls"); // Clears console screen
             // Re-Displaying header as it won't appear breaking out of this menu otherwise
             border_line();
             cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
             border_line();
             break;
         }
-        default:
+        default: // Incorrect input. Allows user to try a different input
         {
             cout << "Invalid selection. Please try again." << endl;
             line();
         }
         }
     } while (option < 3);
-}
+} // End of location_report function
 
-//Function for Admin to view complete Recipient Report ***COMPLETED***
-void recipient_report()
-{
-    Recipient_Details record;
-    fstream info;
-
-    system("cls"); //Clears console screen
-
-    border_line();
-    cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
-    border_line();
-
-    cout << endl << "  \tRECIPIENT LIST" << endl;
-    cout << "--------------------------------" << endl;
-
-    // Open the file for reading
-    info.open("Recipient.dat", ios::in | ios::binary);
-    //Error Message
-    if (!info)
-    {
-        cout << "Error in opening the file... " << endl;
-        line();
-    }
-    else
-    {
-        // Display All Records
-        info.read(reinterpret_cast<char*>(&record), sizeof(record));
-
-        while (!info.eof())
-        {
-            cout << endl << " Name:                  " << record.name;
-            cout << endl << " Contact Number:        " << record.contact_number;
-            cout << endl << " Email Address:         " << record.email_address;
-            cout << endl << " Street Address:        " << record.address_line1;
-            cout << endl << " Suburb/City:           " << record.address_line2;
-            cout << endl << " Registration Status:   " << record.registration_status << endl;
-            cout << endl << " ----------------------------------" << endl;
-
-            //Read one structure at time & display
-            info.read(reinterpret_cast<char*>(&record), sizeof(record));
-        }
-    }
-    //Close File
-    info.close();
-
-    cout << endl << "All records on file retrieved..." << endl;
-
-    line();
-}
-
-//Function to display ---------- ***COMPLETED***
+// Function to display ---------- ***COMPLETED***
 void line()
 {
     cout << endl;
@@ -2363,7 +2948,7 @@ void line()
     cout << endl;
 }
 
-//Function to display x----------x ***COMPLETED***
+// Function to display x----------x ***COMPLETED***
 void border_line()
 {
     cout << endl << "+";
