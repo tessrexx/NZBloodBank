@@ -78,9 +78,6 @@ struct Recipient_Details
     char password[SIZE];
 };
 
-// Main Menu Functions
-void main_menu();
-
 // Donor Functions
 void donor_registration();
 void donor_login();
@@ -119,6 +116,9 @@ void border_line();
 // Main Function
 int main()
 {
+    // Function variable
+    int option;
+
     // Display Title/Header
     border_line();
     cout << endl << ("\x1B[31m\t\t\t\t AOTEAROA BLOOD\033[0m") << endl << endl;
@@ -127,19 +127,6 @@ int main()
     cout << endl << "  Welcome to Aotearoa Blood, where we make blood donation easy." << endl;
     cout << "  Use the menu below to navigate through our system." << endl;
     line();
-
-    // Call main menu function
-    main_menu();
-
-    // Success code returned
-    return 0;
-}
-
-// Function to display blood bank information, contact details, and user menu  ***COMPLETED***
-void main_menu()
-{
-    // Function variable
-    int option;
 
     do
     {
@@ -220,9 +207,12 @@ void main_menu()
 
         }
     } while (option < 8);
-} // End of main_menu function
 
-// Function to obtain new donor registration information  ***COMPLETED***
+    // Success code returned
+    return 0;
+} // End of main function
+
+// Function to obtain new donor registration information 
 void donor_registration()
 {
     // Structure and file variables
@@ -273,10 +263,10 @@ void donor_registration()
         cout << "  > Chickenpox" << endl;
         cout << "  > Asthma" << endl;
         cout << "  > Arthritis" << endl;
-        cout << "  > etc..." << endl;
+        cout << "  > Other" << endl;
         cout << endl << "  Known Health Condition/s: ";
         cin.getline(record.health_conditions, SIZE);
-        cout << endl << "  Blood Group (AB+, AB-, A+, A-, B+, B-, O+, O-): ";
+        cout << endl << "  Blood Group (AB+, AB-, A+, A-, B+, B-, O+, O-, Unknown): ";
         cin.getline(record.blood_group, SIZE);
         cout << "  Contact Number: ";
         cin.getline(record.contact_number, 14);
@@ -318,7 +308,7 @@ void donor_registration()
     line();
 } // End of donor_registration function
 
-// Function for existing donor to login  ***COMPLETED***
+// Function for existing donor to login 
 void donor_login()
 {
     // Function and file variables
@@ -380,7 +370,7 @@ void donor_login()
     info.close();
 } // End of donor_login function
 
-// Function to check login against donor data file ***COMPLETED***
+// Function to check login against donor data file 
 bool search_donor_file(char name[], char pass[])
 {
     // Structure, function, and file variables
@@ -409,7 +399,7 @@ bool search_donor_file(char name[], char pass[])
     return flag;
 } // End of search_donor_file function 
 
-//Function to display Donor Menu  ***COMPLETED***
+//Function to display Donor Menu  
 void donor_menu()
 {
     // Function variable
@@ -428,7 +418,7 @@ void donor_menu()
         cout << " 2. Benefits of Blood Donation" << endl;
         cout << " 3. Book Donation Appointment" << endl;
         cout << " 4. Manage/Update Information" << endl;
-        cout << " 5. Exit" << endl;
+        cout << " 5. Logout" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -480,7 +470,7 @@ void donor_menu()
             cout << " - One blood donation can save up to 3 lives." << endl;
             cout << " - Join an extraordinary group of lifesavers." << endl;
             cout << " - Donating regularly ensures that a safe and plentiful supply " << endl;
-            cout << "   of blood is available wheneverand wherever it is needed. " << endl;
+            cout << "   of blood is available whenever and wherever it is needed. " << endl;
             cout << " - Pay it forward. One day whanau, friends or even you may need it." << endl;
             cout << " - Less than 3% of people in New Zealand are blood donors." << endl;
             line();
@@ -496,10 +486,11 @@ void donor_menu()
             view_information();
             break;
         }
-        case 5:  // Exit program
+        case 5:  // Return to main menu 
         {
-            cout << "Exited Program..." << endl;
-            exit(0);
+            system("cls"); // Clears console screen
+            cout << "\t\t\t\t\t\t\t\t\t\tLogged out"; // Will display on Main Menu Screen
+            main();
         }
         default: // Incorrect input. Allows user to try a different input
         {
@@ -511,7 +502,7 @@ void donor_menu()
     } while (option < 6);
 } // End of donor_menu function
 
-// Function to check existing time slots data file ***COMPLETED***
+// Function to check existing time slots data file 
 void check_existing()
 {
     // File variable
@@ -532,7 +523,7 @@ void check_existing()
     slots.close();
 } // End of check_existing function 
 
-//Function for donors to book donation  ***COMPLETED***
+//Function for donors to book donation  
 void book_donation()
 {
     // Structure and file variables
@@ -836,7 +827,7 @@ void book_donation()
     timeSlot.close();
 } // End of book_donation function
 
-// Function for donors to view their information  ***COMPLETED***
+// Function for donors to view their information
 void view_information()
 {
     // Structure, function, and file variables
@@ -945,7 +936,7 @@ void view_information()
     } while (option < 3);
 } // End of view_information function
 
-// Function for donors to update their information  ***COMPLETED***
+// Function for donors to update their information
 void update_information()
 {
     // Structure, function and file variables
@@ -1242,7 +1233,7 @@ void update_information()
     } while (option < 6);
 } // End of update_information function
 
-// Function to reschedule donor appointment  ***COMPLETED***
+// Function to reschedule donor appointmen
 void reschedule_appointment()
 {
     // Structure, function, and file variables
@@ -1250,6 +1241,7 @@ void reschedule_appointment()
     long long int recordNumber;
     fstream timeSlot;
     fstream reschedule;
+    int input;
 
     system("cls"); //Clears console screen
     // Display title/header
@@ -1274,7 +1266,7 @@ void reschedule_appointment()
         cout << endl << "    RESCHEDULE YOUR APPOINTMENT";
         cout << endl << "----------------------------------" << endl << endl;
         // User input
-        cout << "Enter your Record Number: ";
+        cout << " Enter your Record Number: ";
         cin >> recordNumber;
         cin.ignore(); // Clears input buffer
 
@@ -1284,18 +1276,18 @@ void reschedule_appointment()
 
         //Display the record first
         cout << endl << "Retrieving current appointment..." << endl;
-        cout << endl << " ----------------------------------" << endl;
+        cout << endl << "----------------------------------" << endl;
 
         cout << endl << "  Day of Appointment:   " << booking.booking_day;
         cout << endl << "  Time of Appointment:  " << booking.booking_time << endl;
-        cout << endl << " ----------------------------------" << endl;
+        cout << endl << "----------------------------------" << endl;
 
         // Monday loop for "Booked" timeslot to change to relevent time
         if (strcmp(booking.booking_day, "Monday") == 0 || strcmp(booking.booking_day, "monday") == 0)
         {
             if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(week.monday1, "9:00");
+                strcpy_s(week.monday1, " 9:00");
             }
             else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
@@ -1311,19 +1303,19 @@ void reschedule_appointment()
             }
             else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(week.monday5, "1:00");
+                strcpy_s(week.monday5, " 1:00");
             }
             else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(week.monday6, "2:00");
+                strcpy_s(week.monday6, " 2:00");
             }
             else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(week.monday7, "3:00");
+                strcpy_s(week.monday7, " 3:00");
             }
             else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
             {
-                strcpy_s(week.monday8, "4:00");
+                strcpy_s(week.monday8, " 4:00");
             }
             timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
@@ -1333,7 +1325,7 @@ void reschedule_appointment()
         {
             if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(week.tuesday1, "9:00");
+                strcpy_s(week.tuesday1, " 9:00");
             }
             else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
@@ -1349,19 +1341,19 @@ void reschedule_appointment()
             }
             else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(week.tuesday5, "1:00");
+                strcpy_s(week.tuesday5, " 1:00");
             }
             else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(week.tuesday6, "2:00");
+                strcpy_s(week.tuesday6, " 2:00");
             }
             else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(week.tuesday7, "3:00");
+                strcpy_s(week.tuesday7, " 3:00");
             }
             else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
             {
-                strcpy_s(week.tuesday8, "4:00");
+                strcpy_s(week.tuesday8, " 4:00");
             }
             timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
@@ -1371,7 +1363,7 @@ void reschedule_appointment()
         {
             if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(week.wednesday1, "9:00");
+                strcpy_s(week.wednesday1, " 9:00");
             }
             else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
@@ -1387,19 +1379,19 @@ void reschedule_appointment()
             }
             else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(week.wednesday5, "1:00");
+                strcpy_s(week.wednesday5, " 1:00");
             }
             else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(week.wednesday6, "2:00");
+                strcpy_s(week.wednesday6, " 2:00");
             }
             else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(week.wednesday7, "3:00");
+                strcpy_s(week.wednesday7, " 3:00");
             }
             else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
             {
-                strcpy_s(week.wednesday8, "4:00");
+                strcpy_s(week.wednesday8, " 4:00");
             }
             timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
@@ -1409,7 +1401,7 @@ void reschedule_appointment()
         {
             if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(week.thursday1, "9:00");
+                strcpy_s(week.thursday1, " 9:00");
             }
             else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
@@ -1425,19 +1417,19 @@ void reschedule_appointment()
             }
             else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(week.thursday5, "1:00");
+                strcpy_s(week.thursday5, " 1:00");
             }
             else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(week.thursday6, "2:00");
+                strcpy_s(week.thursday6, " 2:00");
             }
             else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(week.thursday7, "3:00");
+                strcpy_s(week.thursday7, " 3:00");
             }
             else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
             {
-                strcpy_s(week.thursday8, "4:00");
+                strcpy_s(week.thursday8, " 4:00");
             }
             timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
@@ -1447,7 +1439,7 @@ void reschedule_appointment()
         {
             if (strcmp(booking.booking_time, "9:00") == 0 || strcmp(booking.booking_time, "9") == 0)
             {
-                strcpy_s(week.friday1, "9:00");
+                strcpy_s(week.friday1, " 9:00");
             }
             else if (strcmp(booking.booking_time, "10:00") == 0 || strcmp(booking.booking_time, "10") == 0)
             {
@@ -1463,19 +1455,19 @@ void reschedule_appointment()
             }
             else if (strcmp(booking.booking_time, "1:00") == 0 || strcmp(booking.booking_time, "1") == 0)
             {
-                strcpy_s(week.friday5, "1:00");
+                strcpy_s(week.friday5, " 1:00");
             }
             else if (strcmp(booking.booking_time, "2:00") == 0 || strcmp(booking.booking_time, "2") == 0)
             {
-                strcpy_s(week.friday6, "2:00");
+                strcpy_s(week.friday6, " 2:00");
             }
             else if (strcmp(booking.booking_time, "3:00") == 0 || strcmp(booking.booking_time, "3") == 0)
             {
-                strcpy_s(week.friday7, "3:00");
+                strcpy_s(week.friday7, " 3:00");
             }
             else if (strcmp(booking.booking_time, "4:00") == 0 || strcmp(booking.booking_time, "4") == 0)
             {
-                strcpy_s(week.friday8, "4:00");
+                strcpy_s(week.friday8, " 4:00");
             }
             timeSlot.write(reinterpret_cast<char*>(&week), sizeof(week));
         }
@@ -1750,9 +1742,21 @@ void reschedule_appointment()
     }
     // Close data files
     reschedule.close();
+
+    cout << endl << "Press 1 to return to the Manage Information Menu: ";
+    cin >> input;
+    if (input == 1)
+    {
+        view_information();
+    }
+    else
+    {
+        cout << endl << "Invalid key. Press 1 to return to the Manage Information Menu: ";
+    }
+
 } // End of reschedule_appointment function
 
-// Function to obtain new recipient registration information  ***COMPLETED***
+// Function to obtain new recipient registration information
 void recipient_registration()
 {
     // Structure and file variables
@@ -1807,7 +1811,7 @@ void recipient_registration()
     line();
 } // End of recipient_registration function
 
-// Function to obtain new recipient registration information  ***COMPLETED***
+// Function to obtain new recipient registration information
 void recipient_login()
 {
     // Function and file variables
@@ -1868,7 +1872,7 @@ void recipient_login()
     info.close();
 } // End of recipient_login function
 
-// Function to check login against recipient data file ***COMPLETED***
+// Function to check login against recipient data file
 bool search_recipient_file(char name[], char pass[])
 {
     // Structure, function, and file variables
@@ -1896,7 +1900,7 @@ bool search_recipient_file(char name[], char pass[])
     return flag;
 }
 
-// Function to display recipient menu  ***COMPLETED***
+// Function to display recipient menu
 void recipient_menu()
 {
     // Function variable
@@ -1915,7 +1919,7 @@ void recipient_menu()
         cout << "  1. Full Name" << endl;
         cout << "  2. Blood Group" << endl;
         cout << "  3. Location" << endl;
-        cout << "  4. Exit..." << endl;
+        cout << "  4. Logout" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -1940,10 +1944,11 @@ void recipient_menu()
             location();
             break;
         }
-        case 4: // Exit program
+        case 4: // Return to main menu
         {
-            cout << "Program Exited..." << endl << endl;
-            exit(0);
+            system("cls"); // Clears console screen
+            cout << "\t\t\t\t\t\t\t\t\t\tLogged out"; // Will display on Main Menu Screen
+            main();
         }
         default: // Incorrect input. Allows user to try a different input
         {
@@ -1956,7 +1961,7 @@ void recipient_menu()
     }
 } // End of recipient_menu function
 
-// Function to search by donor's full name & display ***COMPLETED***
+// Function to search by donor's full name & display
 void full_name()
 {
     // Structure, function, and file variables
@@ -2034,7 +2039,7 @@ void full_name()
     info.close();
 } // End of full_name function
 
-// Function to search by donor blood type & display ***COMPLETED***
+// Function to search by donor blood type & display
 void blood_group()
 {
     // Structure, function, and file variables
@@ -2110,7 +2115,7 @@ void blood_group()
     info.close();
 } // End of blood_group function
 
-// Function to search by donor loaction & display ***COMPLETED***
+// Function to search by donor loaction & display
 void location()
 {
     // Structure, function, and file variables
@@ -2186,7 +2191,7 @@ void location()
     info.close();
 } // End of location function
 
-// Function for admin login (fixed username & password)  ***COMPLETED***
+// Function for admin login (fixed username & password)
 void admin_login()
 {
     // Function variables
@@ -2237,7 +2242,7 @@ void admin_login()
     line();
 } // End of admin_login function
 
-// Function to display admin menu  ***COMPLETED***
+// Function to display admin menu  
 void admin_menu()
 {
     // Function variable
@@ -2259,7 +2264,7 @@ void admin_menu()
         cout << " 5. Update Donor's Blood Report" << endl;
         cout << " 6. Blood Group Report" << endl;
         cout << " 7. Location Report" << endl;
-        cout << " 8. Exit..." << endl;
+        cout << " 8. Logout" << endl;
 
         cout << endl << " Enter your option: "; //User Option Input
         cin >> option;
@@ -2304,10 +2309,11 @@ void admin_menu()
             location_report();
             break;
         }
-        case 8: // Exit program
+        case 8: // Return to main menu
         {
-            cout << "Program Exited..." << endl << endl;
-            exit(0);
+            system("cls"); // Clears console screen
+            cout << "\t\t\t\t\t\t\t\t\t\tLogged out"; // Will display on Main Menu Screen
+            main();
         }
         default: // Incorrect input. Allows user to try a different input
         {
@@ -2318,7 +2324,7 @@ void admin_menu()
     } while (option < 8);
 } // End of admin_menu function
 
-// Function for admin to search and view Recipient Information ***COMPLETED***
+// Function for admin to search and view Recipient Information
 void search_recipient()
 {
     // Structure, function and file variables
@@ -2384,7 +2390,7 @@ void search_recipient()
     info.close();
 } // End of search_recipient function
 
-// Function for admin to view complete recipient report ***COMPLETED***
+// Function for admin to view complete recipient report 
 void recipient_report()
 {
     // Structure and file variables
@@ -2433,7 +2439,7 @@ void recipient_report()
     line();
 } // End of recipient_report funtion
 
-// Function for admin to search and view donor information ***COMPLETED***
+// Function for admin to search and view donor information
 void search_donor()
 {
     // Structure, function and file variables
@@ -2513,7 +2519,7 @@ void search_donor()
     info.close();
 } // End of search_donor function
 
-// Function for admin to update sonor's blood type ***COMPLETED***
+// Function for admin to update sonor's blood type
 void update_blood()
 {
     // Structure, function and file variables
@@ -2582,7 +2588,7 @@ void update_blood()
     line();
 } // End of update_blood function
 
-// Function for admin to view complete donor report ***COMPLETED***
+// Function for admin to view complete donor report 
 void donor_report()
 {
     // Structure and file variables
@@ -2640,7 +2646,7 @@ void donor_report()
     line();
 }
 
-// Function for admin to search and view blood report ***COMPLETED***
+// Function for admin to search and view blood report 
 void blood_report()
 {
     // Structure, function, and file variables
@@ -2788,7 +2794,7 @@ void blood_report()
     } while (option < 3);
 } // End of blood_report function
 
-// Function for admin to search and view location Report ***COMPLETED***
+// Function for admin to search and view location Report 
 void location_report()
 {
     // Structure, function, and file variables
@@ -2937,7 +2943,7 @@ void location_report()
     } while (option < 3);
 } // End of location_report function
 
-// Function to display ---------- ***COMPLETED***
+// Function to display ---------- 
 void line()
 {
     cout << endl;
@@ -2948,7 +2954,7 @@ void line()
     cout << endl;
 }
 
-// Function to display x----------x ***COMPLETED***
+// Function to display x----------x 
 void border_line()
 {
     cout << endl << "+";
