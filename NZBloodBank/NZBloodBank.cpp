@@ -438,21 +438,20 @@ void donor_menu()
             cout << endl << "   PROCEDURE TO DONATE BLOOD" << endl;
             cout << "--------------------------------" << endl << endl;
             // Donation Steps
-            cout << " 1) Check-in at reception with your ID & complete a provided questionnaire." << endl;
-            cout << "    Once you have completed your questionnaire, you will have a confidential interview with a NZBS" << endl;
-            cout << "    nurse or donor technician. They will also check your haemoglobin level using a finger prick test." << endl;
-            cout << "    This is a great opportunity for you to discuss the donation process and ask any questions you" << endl;
-            cout << "    may have." << endl << endl;
-            cout << " 2) Once the forms are completed, you will be seated and your arm will be cleaned at the" << endl;
-            cout << "    venepuncture site (on the inside of the elbow) and a sterile, single-use needle will be inserted." << endl;
-            cout << "    There may be a moment of discomfort as the needle goes in." << endl << endl;
-            cout << " 3) A blood donation can take up to 60 minutes (includes registration, donation and recovery)." << endl;
-            cout << "    The blood is collected in a sterile bag, and time on the bed can take about 5 to 10 minutes." << endl;
-            cout << "    A unit of blood (around 470 ml) will be collected. The needle is then removed and a bandage" << endl;
-            cout << "    is applied." << endl << endl;
-            cout << " 4) After donating blood, you will be asked to rest on the chair for around 5 to 10 minutes. When " << endl;
-            cout << "    you're ready, you will be invited to have refreshments in the recovery area. We like to keep an" << endl;
-            cout << "    eye on you for another 10-15 minutes to make sure that you feel OK before leaving." << endl;
+            cout << " 1) Check in with your ID at reception and fill out the provided questionnaire. " << endl;
+            cout << "    After you've finished your questionnaire, you'll meet with a Aotearoa Blood Nurse for a " << endl;
+            cout << "    confidential interview. A finger prick test will be used to check your hemoglobin level." << endl;
+            cout << "    This is an excellent time for you to ask any questions you may have about the donation procedure." << endl << endl;
+            cout << " 2) After you've filled out the paperwork, you'll be seated and your arm will be sanitized at the " << endl;
+            cout << "    venipuncture site (on the inside of the elbow) before a sterile, single-use needle is inserted." << endl;
+            cout << "    As the needle is inserted, there may be some discomfort." << endl << endl;
+            cout << " 3) Donating blood may take up to 60 minutes (includes registration, donation and recovery)." << endl;
+            cout << "    The blood is taken in a sterile bag, and being on the bed for 5 to 10 minutes is typical." << endl;
+            cout << "    A unit of blood (about 470 ml) will be taken. After that, the needle is removed and a bandage is" << endl;
+            cout << "    placed on the wound." << endl << endl;
+            cout << " 4) You will be requested to sit in the chair for 5 to 10 minutes after donating blood." << endl;
+            cout << "    When you're ready, you'll be invited to the recuperation area for refreshments. Before departing," << endl;
+            cout << "    we want to keep an eye on you for another 10-15 minutes to make sure you're comfortable." << endl;
             line();
             break;
         }
@@ -1782,7 +1781,7 @@ void recipient_registration()
     // User input & writing in data file
     else
     {
-        cout << "  First Name: ";
+        cout << "  Company Name: ";
         cin.getline(record.name, SIZE);
         cout << "  Contact Number: ";
         cin.getline(record.contact_number, 14);
